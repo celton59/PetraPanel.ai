@@ -55,7 +55,7 @@ const versionHistory: ChangelogEntry[] = [
       },
       { 
         type: 'improved', 
-        description: 'Notificaciones más prominentes sobre enlaces de afiliados en la descripción de videos'
+        description: 'Implementada advertencia para youtubers: NO mencionar que son enlaces de afiliación'
       },
       { 
         type: 'fixed', 
