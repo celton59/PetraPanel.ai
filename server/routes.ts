@@ -24,6 +24,7 @@ import { setupAffiliateRoutes } from "./controllers/affiliateController";
 import { setupSuggestionRoutes } from "./controllers/suggestionController";
 import { setUpAccountingRoutes } from "./controllers/accountingController.js";
 import { setUpActivityRoutes } from "./controllers/activityController";
+import { setupYoutubeRoutes } from "./controllers/youtubeController";
 
 export function registerRoutes(app: Express): Server {
   try {
@@ -340,6 +341,9 @@ export function registerRoutes(app: Express): Server {
 
     // Actividad de usuarios
     setUpActivityRoutes(requireAuth, app);
+    
+    // YouTube API y canales
+    setupYoutubeRoutes(app, requireAuth);
 
     const httpServer = createServer(app);
     return httpServer;

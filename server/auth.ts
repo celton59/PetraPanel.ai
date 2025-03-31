@@ -14,10 +14,11 @@ import {
   SECURITY_CONSTANTS
 } from "./services/security";
 
-// Extender SessionData para incluir csrfToken
+// Extender SessionData para incluir datos personalizados
 declare module 'express-session' {
   interface SessionData {
     csrfToken?: string;
+    youtubeAuthChannel?: string;
   }
 }
 
@@ -29,12 +30,6 @@ declare global {
 }
 
 import 'express-session';
-
-declare module 'express-session' {
-  interface SessionData {
-    csrfToken?: string;
-  }
-}
 
 declare module "express-serve-static-core" {
   interface Request {

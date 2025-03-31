@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, timestamp, boolean, numeric, jsonb, vector, index, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, boolean, numeric, jsonb, vector, index, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -137,7 +137,32 @@ export const youtubeChannels = pgTable("youtube_channels", {
   active: boolean("active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  // Campos para integración con la API de YouTube
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  tokenExpiryDate: timestamp("token_expiry_date"),
+  isAuthorized: boolean("is_authorized").default(false)
 });
+
+export const projectYoutubeChannels = pgTable("project_youtube_channels", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id")
+    .notNull()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  channelId: text("channel_id")
+    .notNull()
+    .references(() => youtubeChannels.channelId, { onDelete: "cascade" }),
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => {
+  return {
+    projectChannelIdx: uniqueIndex("project_channel_idx").on(table.projectId, table.channelId)
+  };
+});
+
+export type ProjectYoutubeChannel = typeof projectYoutubeChannels.$inferSelect;
+export type InsertProjectYoutubeChannel = typeof projectYoutubeChannels.$inferInsert;
 
 export type YoutubeChannel = typeof youtubeChannels.$inferSelect;
 
