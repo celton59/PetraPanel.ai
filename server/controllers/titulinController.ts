@@ -337,7 +337,7 @@ async function getVideoStats(req: Request, res: Response): Promise<Response> {
 
     console.log('Obteniendo estadísticas de titulin videos...');
 
-    // Obtener el total y conteos por estado de la tabla videos
+    // Obtener el total y conteos por estado de la tabla videos, excluyendo los eliminados
     const [videoStats] = await db
       .select({
         total_videos: count(),
@@ -347,6 +347,7 @@ async function getVideoStats(req: Request, res: Response): Promise<Response> {
         final_review_count: count(sql`CASE WHEN status = 'final_review' THEN 1 END`)
       })
       .from(videos)
+      .where(eq(videos.isDeleted, false)) // Filtramos solo videos activos
       .execute();
 
     // Asegurar que los valores son números
