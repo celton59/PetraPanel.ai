@@ -301,15 +301,15 @@ export function UploadContentDetail({
                 <h3 className="text-sm font-bold text-amber-800 dark:text-amber-300 mb-1">⚠️ IMPORTANTE: Enlaces de afiliación</h3>
                 <div className="text-xs text-amber-700 dark:text-amber-300 space-y-2">
                   <p className="font-medium">
-                    Si tu video menciona productos o servicios con enlaces de afiliación, <span className="underline font-bold">DEBES DECIR EXPLÍCITAMENTE EN EL VIDEO</span>:
+                    Si tu video menciona productos o servicios con enlaces de afiliación, <span className="underline font-bold">DEBES SEGUIR ESTAS INSTRUCCIONES</span>:
                   </p>
                   <ul className="list-disc pl-5 space-y-1">
                     <li>Que hay enlaces en la descripción y en los comentarios fijados</li>
-                    <li>Mencionar claramente que son enlaces de afiliación</li>
+                    <li><span className="bg-red-200 dark:bg-red-900/50 px-1 font-bold">NO MENCIONAR</span> que son enlaces de afiliación</li>
                     <li>Explicar brevemente que usarlos ayuda al canal</li>
                   </ul>
                   <p className="pt-1 font-semibold">
-                    Este requisito es obligatorio para cumplir con las normativas aplicables. Los videos sin esta mención explícita serán rechazados.
+                    Este requisito es obligatorio para cumplir con las normativas aplicables. Los videos sin esta mención serán rechazados.
                   </p>
                 </div>
                 <div className="mt-3">
