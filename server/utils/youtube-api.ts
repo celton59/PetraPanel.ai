@@ -6,7 +6,7 @@ import * as path from 'path';
 const YOUTUBE_OAUTH_CONFIG = {
   clientId: process.env.YOUTUBE_CLIENT_ID,
   clientSecret: process.env.YOUTUBE_CLIENT_SECRET,
-  redirectUrl: process.env.YOUTUBE_REDIRECT_URI || 'http://localhost:3000/api/youtube/oauth-callback'
+  redirectUrl: 'https://aa787a20-7419-4e5c-97d6-f6f4527efda1-00-2avvuq1cco2qv.spock.replit.dev/api/youtube/oauth-callback'
 };
 
 // Registrar la configuración de OAuth para depuración
