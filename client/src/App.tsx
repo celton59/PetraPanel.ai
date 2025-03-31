@@ -92,6 +92,7 @@ function Router() {
           <Route path="/admin/configuration" component={() => <ProtectedRoute component={ConfigurationPage} />} />
           <Route path="/admin/notifications" component={() => <ProtectedRoute component={NotificationsAdminPage} />} />
           <Route path="/admin/afiliados" component={() => <ProtectedRoute component={ConfiguracionAfiliados} />} />
+          <Route path="/admin/youtube" component={() => <ProtectedRoute component={YoutubeAdminPage} />} />
           <Route path="/administracion/youtube" component={() => <ProtectedRoute component={YoutubeAdminPage} />} />
         </>
       )}

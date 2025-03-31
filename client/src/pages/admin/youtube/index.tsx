@@ -99,7 +99,7 @@ export default function YoutubeAdminPage() {
       const result = await getProjectChannels(Number(channelId));
       if (result && Array.isArray(result.data)) {
         // Convertir el formato de canal de YouTube a formato de ProjectChannel
-        const formattedChannels = result.data.map(channel => ({
+        const formattedChannels = result.data.map((channel: any) => ({
           id: channel.linkId || channel.id,
           project_id: Number(channel.projectId || 0),
           channel_id: channel.channelId,
