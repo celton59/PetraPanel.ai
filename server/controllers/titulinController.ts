@@ -324,11 +324,12 @@ async function analyzeVideo(req: Request, res: Response): Promise<Response> {
 }
 
 // Función para obtener estadísticas de videos
+// Todos los usuarios pueden acceder a las estadísticas para el dashboard
 async function getVideoStats(req: Request, res: Response): Promise<Response> {
-  if (!req.user?.role || req.user.role !== "admin") {
-    return res.status(403).json({
+  if (!req.user) {
+    return res.status(401).json({
       success: false,
-      message: "No tienes permisos para obtener estadísticas",
+      message: "Debes iniciar sesión para acceder a esta funcionalidad",
     });
   }
 
