@@ -13,6 +13,8 @@ export type YoutubeChannel = {
   active: boolean;
   isAuthorized?: boolean;
   accessToken?: string;
+  createdAt: string;
+  updatedAt: string;
   // Campos adicionales cuando se consulta como canal vinculado a proyecto
   isDefault?: boolean;
   linkId?: number;
@@ -67,22 +69,14 @@ export function useYoutubeChannels() {
   });
 
   // Obtener canales vinculados a un proyecto
-  const getProjectChannels = (projectId: number) => {
-    return useQuery<YoutubeChannel[]>({
-      queryKey: [`/api/youtube/project/${projectId}/channels`],
-      queryFn: async () => {
-        try {
-          const response = await api.get(`/api/youtube/project/${projectId}/channels`);
-          return response.data.data || [];
-        } catch (error) {
-          console.error(`Error al cargar canales del proyecto ${projectId}:`, error);
-          return [];
-        }
-      },
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      staleTime: 5 * 60 * 1000, // 5 minutos
-    });
+  const getProjectChannels = async (projectId: number) => {
+    try {
+      const response = await api.get(`/api/youtube/project/${projectId}/channels`);
+      return response.data || { data: [] };
+    } catch (error) {
+      console.error(`Error al cargar canales del proyecto ${projectId}:`, error);
+      return { data: [] };
+    }
   };
 
   // Obtener el canal predeterminado de un proyecto
