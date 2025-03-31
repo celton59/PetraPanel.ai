@@ -1,0 +1,109 @@
+Uncaught (in promise) vtUnderstand this errorAI
+api/suggestions:1 
+            
+            
+           Failed to load resource: the server responded with a status of 403 ()Understand this errorAI
+index-DEr-73P5.js:1031 Error al crear sugerencia: vt
+mutationFn @ index-DEr-73P5.js:1031Understand this errorAI
+index-DEr-73P5.js:1031 Uncaught (in promise) vtUnderstand this errorAI
+api/suggestions:1 
+            
+            
+           Failed to load resource: the server responded with a status of 403 ()Understand this errorAI
+index-DEr-73P5.js:1031 Error al crear sugerencia: vt
+mutationFn @ index-DEr-73P5.js:1031Understand this errorAI
+index-DEr-73P5.js:1031 Uncaught (in promise) vtUnderstand this errorAI
+api/suggestions:1 
+            
+            
+           Failed to load resource: the server responded with a status of 403 ()Understand this errorAI
+index-DEr-73P5.js:1031 Error al crear sugerencia: vt
+mutationFn @ index-DEr-73P5.js:1031Understand this errorAI
+index-DEr-73P5.js:1031 Uncaught (in promise) vtUnderstand this errorAI
+index-DEr-73P5.js:976 
+            
+            
+           POST https://petrapanel.ai/api/suggestions 403 (Forbidden)
+(anonymous) @ index-DEr-73P5.js:976
+xhr @ index-DEr-73P5.js:976
+i4 @ index-DEr-73P5.js:978
+_request @ index-DEr-73P5.js:979
+request @ index-DEr-73P5.js:978
+(anonymous) @ index-DEr-73P5.js:979
+(anonymous) @ index-DEr-73P5.js:974
+mutationFn @ index-DEr-73P5.js:1031
+fn @ index-DEr-73P5.js:48
+g @ index-DEr-73P5.js:48
+start @ index-DEr-73P5.js:48
+execute @ index-DEr-73P5.js:48
+await in execute
+mutate @ index-DEr-73P5.js:48
+n @ index-DEr-73P5.js:1269
+(anonymous) @ index-DEr-73P5.js:1031
+await in (anonymous)
+FX @ index-DEr-73P5.js:37
+VX @ index-DEr-73P5.js:37
+BX @ index-DEr-73P5.js:37
+jO @ index-DEr-73P5.js:37
+eF @ index-DEr-73P5.js:37
+(anonymous) @ index-DEr-73P5.js:37
+rP @ index-DEr-73P5.js:40
+SL @ index-DEr-73P5.js:37
+w1 @ index-DEr-73P5.js:37
+AE @ index-DEr-73P5.js:37
+aZ @ index-DEr-73P5.js:37Understand this errorAI
+index-DEr-73P5.js:1031 Error al crear sugerencia: vt {message: 'Request failed with status code 403', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+mutationFn @ index-DEr-73P5.js:1031
+await in mutationFn
+fn @ index-DEr-73P5.js:48
+g @ index-DEr-73P5.js:48
+start @ index-DEr-73P5.js:48
+execute @ index-DEr-73P5.js:48
+await in execute
+mutate @ index-DEr-73P5.js:48
+n @ index-DEr-73P5.js:1269
+(anonymous) @ index-DEr-73P5.js:1031
+await in (anonymous)
+FX @ index-DEr-73P5.js:37
+VX @ index-DEr-73P5.js:37
+BX @ index-DEr-73P5.js:37
+jO @ index-DEr-73P5.js:37
+eF @ index-DEr-73P5.js:37
+(anonymous) @ index-DEr-73P5.js:37
+rP @ index-DEr-73P5.js:40
+SL @ index-DEr-73P5.js:37
+w1 @ index-DEr-73P5.js:37
+AE @ index-DEr-73P5.js:37
+aZ @ index-DEr-73P5.js:37Understand this errorAI
+index-DEr-73P5.js:976 Uncaught (in promise) vt {message: 'Request failed with status code 403', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+hV @ index-DEr-73P5.js:976
+y @ index-DEr-73P5.js:976
+XMLHttpRequest.send
+(anonymous) @ index-DEr-73P5.js:976
+xhr @ index-DEr-73P5.js:976
+i4 @ index-DEr-73P5.js:978
+_request @ index-DEr-73P5.js:979
+request @ index-DEr-73P5.js:978
+(anonymous) @ index-DEr-73P5.js:979
+(anonymous) @ index-DEr-73P5.js:974
+mutationFn @ index-DEr-73P5.js:1031
+fn @ index-DEr-73P5.js:48
+g @ index-DEr-73P5.js:48
+start @ index-DEr-73P5.js:48
+execute @ index-DEr-73P5.js:48
+await in execute
+mutate @ index-DEr-73P5.js:48
+n @ index-DEr-73P5.js:1269
+(anonymous) @ index-DEr-73P5.js:1031
+await in (anonymous)
+FX @ index-DEr-73P5.js:37
+VX @ index-DEr-73P5.js:37
+BX @ index-DEr-73P5.js:37
+jO @ index-DEr-73P5.js:37
+eF @ index-DEr-73P5.js:37
+(anonymous) @ index-DEr-73P5.js:37
+rP @ index-DEr-73P5.js:40
+SL @ index-DEr-73P5.js:37
+w1 @ index-DEr-73P5.js:37
+AE @ index-DEr-73P5.js:37
+aZ @ index-DEr-73P5.js:37Understand this errorAI

@@ -117,7 +117,9 @@ export function setupAuth(app: Express) {
       '/api/compat/update-limits',
       '/api/management/limits/user',
       '/api/management/limits/all-users',
-      '/api/management/limits/report'
+      '/api/management/limits/report',
+      '/api/suggestions',
+      '/api/suggestions/user'
     ];
     
     // Verificar si la ruta actual está en la lista de exenciones

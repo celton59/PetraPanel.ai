@@ -4,6 +4,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./auth";
 import path from "path";
 import fs from "fs";
+import { db } from "../db";
 import { setupOnlineUsersService } from "./services/online-users";
 import { setupNotificationsService } from "./services/notifications";
 
@@ -97,9 +98,68 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   res.status(status).json({ message });
 });
 
+// Función para aplicar migraciones SQL
+async function applyMigrations() {
+  try {
+    log("Verificando migraciones SQL", "migrations");
+    
+    // Crear tabla de migraciones si no existe
+    await db.execute(`
+      CREATE TABLE IF NOT EXISTS migrations_applied (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) UNIQUE NOT NULL,
+        applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `);
+    
+    // Obtener migraciones ya aplicadas
+    const result = await db.execute(`SELECT name FROM migrations_applied`);
+    const appliedMigrations = new Set(result.rows.map((row: any) => row.name));
+    
+    // Leer directorio de migraciones
+    const migrationsDir = path.join(process.cwd(), 'migrations');
+    if (fs.existsSync(migrationsDir)) {
+      const migrationFiles = fs.readdirSync(migrationsDir)
+        .filter(file => file.endsWith('.sql'))
+        .sort();
+      
+      // Aplicar migraciones pendientes
+      let applied = 0;
+      for (const file of migrationFiles) {
+        if (!appliedMigrations.has(file)) {
+          log(`Aplicando migración: ${file}`, "migrations");
+          const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
+          
+          try {
+            await db.execute(sql);
+            await db.execute(
+              `INSERT INTO migrations_applied (name, applied_at) VALUES ('${file}', NOW())`
+            );
+            
+            log(`✅ Migración aplicada: ${file}`, "migrations");
+            applied++;
+          } catch (err) {
+            log(`❌ Error aplicando migración ${file}: ${err}`, "migrations");
+            console.error(err);
+          }
+        }
+      }
+      
+      log(`Migraciones completadas. ${applied} nuevas migraciones aplicadas.`, "migrations");
+    } else {
+      log("Directorio de migraciones no encontrado", "migrations");
+    }
+  } catch (err) {
+    log(`Error verificando migraciones: ${err}`, "migrations");
+    console.error("Error durante la aplicación de migraciones:", err);
+  }
+}
+
 (async () => {
   try {
-    
+    // Aplicar migraciones SQL antes de arrancar el servidor
+    await applyMigrations();
+
     // Configurar Vite en desarrollo o servir archivos estáticos en producción
     if (app.get("env") === "development") {
       await setupVite(app, server);
