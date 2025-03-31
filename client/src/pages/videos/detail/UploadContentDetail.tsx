@@ -15,7 +15,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useUser } from "@/hooks/use-user";
 import { VideoUploader, UploadProgressState } from "@/services/videoUploader";
 import { AffiliateManager } from "@/components/video/AffiliateManager";
-import { AffiliateInfoDialog } from "@/components/video/AffiliateInfoDialog";
 
 // Estado inicial de progreso vacío
 const emptyProgressState: UploadProgressState = {
@@ -312,9 +311,7 @@ export function UploadContentDetail({
                     Este requisito es obligatorio para cumplir con las normativas aplicables. Los videos sin esta mención serán rechazados.
                   </p>
                 </div>
-                <div className="mt-3">
-                  <AffiliateInfoDialog variant="button" />
-                </div>
+
               </div>
             </div>
           </div>
