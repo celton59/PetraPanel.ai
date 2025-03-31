@@ -11,6 +11,7 @@ import { FinanceConfigTab } from "../accounting/FinanceConfigTab";
 import TitulinTab from "./tabs/titulin/TitulinTab";
 import { EasterEggsTab } from "./tabs/easter-eggs/EasterEggsTab";
 import ConfiguracionAfiliados from "@/pages/administracion/ConfiguracionAfiliados";
+import YoutubeAdminPage from "@/pages/admin/youtube";
 
 /**
  * Página de configuración del administrador que contiene diferentes pestañas
@@ -44,6 +45,7 @@ export default function ConfigurationPage() {
             <TabsTrigger value="finanzas">Configuración Financiera</TabsTrigger>
             <TabsTrigger value="titulin">Titulín</TabsTrigger>
             <TabsTrigger value="afiliados">Afiliados</TabsTrigger>
+            <TabsTrigger value="youtube">YouTube</TabsTrigger>
             <TabsTrigger value="easter-eggs">Easter Eggs</TabsTrigger>
           </TabsList>
 
@@ -85,6 +87,10 @@ export default function ConfigurationPage() {
           
           <TabsContent value="afiliados" className="space-y-4">
             <ConfiguracionAfiliados />
+          </TabsContent>
+          
+          <TabsContent value="youtube" className="space-y-4">
+            <YoutubeAdminPage />
           </TabsContent>
         </Tabs>
       </div>
