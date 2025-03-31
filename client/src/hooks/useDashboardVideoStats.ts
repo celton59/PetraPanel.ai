@@ -27,6 +27,9 @@ export function useDashboardVideoStats() {
       const { data } = await axios.get<VideoStats>('/api/titulin/videos/stats');
       return data;
     },
-    staleTime: 30000, // Refrescar cada 30 segundos
+    staleTime: 30000, // Considera los datos frescos por 30 segundos
+    refetchOnWindowFocus: true, // Actualiza los datos cuando el usuario regresa a la pestaña
+    refetchOnMount: true, // Actualiza cuando el componente se monta (vuelve a la página)
+    refetchInterval: 60000, // Refresca automáticamente cada minuto incluso sin interacción
   });
 }
