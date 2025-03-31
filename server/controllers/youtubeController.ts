@@ -354,9 +354,19 @@ async function handleOAuthCallback(req: Request, res: Response): Promise<void> {
     // Registrar la URL de redirección para depuración
     const redirectUri = process.env.YOUTUBE_REDIRECT_URI || 'http://localhost:3000/api/youtube/oauth-callback';
     console.log('URL de redirección OAuth en callback:', redirectUri);
+    console.log('Código de autorización recibido:', code);
+    console.log('ID del canal almacenado en sesión:', channelId);
+    console.log('Datos de sesión completos:', req.session);
     
-    if (!code || !channelId) {
-      res.redirect('/error?message=Autorización inválida');
+    if (!code) {
+      console.error('No se recibió código de autorización');
+      res.redirect('/admin/youtube?error=no_code&message=No+se+recibió+código+de+autorización');
+      return;
+    }
+    
+    if (!channelId) {
+      console.error('No se encontró ID del canal en la sesión');
+      res.redirect('/admin/youtube?error=no_channel&message=No+se+encontró+el+canal+para+autorizar');
       return;
     }
     
@@ -397,10 +407,12 @@ async function handleOAuthCallback(req: Request, res: Response): Promise<void> {
     delete req.session.youtubeAuthChannel;
     
     // Redirigir a una página de éxito
-    res.redirect('/youtube-auth-success');
+    // Verificar primero si la ruta existe, si no, redirigir al admin de YouTube
+    res.redirect('/admin/youtube');
   } catch (error) {
     console.error('Error en callback de OAuth:', error);
-    res.redirect('/error?message=Error durante la autorización');
+    // Redirigir a la página de administración de YouTube con un mensaje de error
+    res.redirect('/admin/youtube?error=auth_failed&message=Error+durante+la+autorización');
   }
 }
 

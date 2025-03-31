@@ -9,6 +9,13 @@ const YOUTUBE_OAUTH_CONFIG = {
   redirectUrl: process.env.YOUTUBE_REDIRECT_URI || 'http://localhost:3000/api/youtube/oauth-callback'
 };
 
+// Registrar la configuración de OAuth para depuración
+console.log('=== Configuración OAuth de YouTube ===');
+console.log('REDIRECT_URI:', YOUTUBE_OAUTH_CONFIG.redirectUrl);
+console.log('CLIENT_ID presente:', YOUTUBE_OAUTH_CONFIG.clientId ? 'Sí' : 'No');
+console.log('CLIENT_SECRET presente:', YOUTUBE_OAUTH_CONFIG.clientSecret ? 'Sí' : 'No');
+console.log('====================================');
+
 /**
  * Crea una nueva instancia del cliente OAuth2 para la API de YouTube
  */
