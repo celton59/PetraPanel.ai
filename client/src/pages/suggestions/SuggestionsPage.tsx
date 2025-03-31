@@ -1,10 +1,11 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SuggestionForm } from '@/components/suggestions/SuggestionForm';
 import { UserSuggestionList } from '@/components/suggestions/UserSuggestionList';
 import { AdminSuggestionList } from '@/components/suggestions/AdminSuggestionList';
 import { useUser } from '@/hooks/use-user';
-import { MessageSquareHeart, Lightbulb, Sparkles } from 'lucide-react';
+import { MessageSquareHeart, Lightbulb, Sparkles, BarChart3 } from 'lucide-react';
 import { useSuggestions } from '@/hooks/useSuggestions';
 
 export default function SuggestionsPage() {
@@ -22,45 +23,114 @@ export default function SuggestionsPage() {
     ? allSuggestions.data?.filter(s => s.status === 'implemented').length || 0
     : 0;
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { type: "spring", stiffness: 80 }
+    }
+  };
+
   return (
-    <div className="container mx-auto py-8 px-4 md:px-6">
-      {/* Encabezado con gradiente y animación subtle */}
-      <div className="relative mb-8 overflow-hidden rounded-xl bg-gradient-to-r from-violet-500/10 via-primary/10 to-indigo-400/10 p-8 border border-primary/20">
-        <div className="absolute inset-0 bg-grid-primary/5 [mask-image:linear-gradient(0deg,transparent,#000)]"></div>
-        <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <MessageSquareHeart className="h-8 w-8 text-primary" />
-              <span>Sistema de Sugerencias</span>
-            </h1>
-            <p className="text-muted-foreground mt-2 max-w-2xl">
-              Tu opinión es fundamental para la evolución de PetraPanel. Comparte tus ideas, identifica problemas o solicita nuevas funciones para ayudarnos a mejorar.
-            </p>
-          </div>
-          
-          {isAdmin && !allSuggestions.isLoading && (
-            <div className="flex flex-wrap md:flex-nowrap gap-4">
-              <div className="flex-1 min-w-[120px] rounded-lg border bg-card p-3 shadow-sm">
-                <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-2xl font-bold">{totalSuggestions}</p>
+    <motion.div 
+      className="container mx-auto space-y-6 sm:space-y-8 py-6 px-4 md:px-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Encabezado principal */}
+      <motion.div variants={itemVariants} className="mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
+          <MessageSquareHeart className="h-7 w-7 text-primary" />
+          <span>Sistema de Sugerencias</span>
+        </h1>
+        <p className="text-muted-foreground mt-1 max-w-2xl">
+          Tu opinión es fundamental para la evolución de PetraPanel. Comparte tus ideas y ayúdanos a mejorar.
+        </p>
+      </motion.div>
+      
+      {/* Tarjetas de estadísticas (solo para admins) */}
+      {isAdmin && !allSuggestions.isLoading && (
+        <motion.div 
+          variants={itemVariants}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          <motion.div 
+            variants={itemVariants}
+            className="rounded-lg border bg-card p-3 shadow-sm transition-all hover:shadow-md duration-200"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-md bg-primary/10">
+                <BarChart3 className="h-4 w-4 text-primary" />
               </div>
-              <div className="flex-1 min-w-[120px] rounded-lg border bg-card p-3 shadow-sm">
-                <p className="text-sm text-muted-foreground">Pendientes</p>
-                <p className="text-2xl font-bold text-amber-500">{pendingSuggestions}</p>
-              </div>
-              <div className="flex-1 min-w-[120px] rounded-lg border bg-card p-3 shadow-sm">
-                <p className="text-sm text-muted-foreground">Implementadas</p>
-                <p className="text-2xl font-bold text-emerald-500">{implementedSuggestions}</p>
+              <div>
+                <p className="text-xs text-muted-foreground">Total</p>
+                <p className="text-xl font-bold">{totalSuggestions}</p>
               </div>
             </div>
-          )}
-        </div>
-      </div>
+          </motion.div>
+          
+          <motion.div 
+            variants={itemVariants}
+            className="rounded-lg border bg-card p-3 shadow-sm transition-all hover:shadow-md duration-200"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-md bg-amber-500/10">
+                <MessageSquareHeart className="h-4 w-4 text-amber-500" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Pendientes</p>
+                <p className="text-xl font-bold text-amber-500">{pendingSuggestions}</p>
+              </div>
+            </div>
+          </motion.div>
+          
+          <motion.div 
+            variants={itemVariants}
+            className="rounded-lg border bg-card p-3 shadow-sm transition-all hover:shadow-md duration-200"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-md bg-emerald-500/10">
+                <Sparkles className="h-4 w-4 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Implementadas</p>
+                <p className="text-xl font-bold text-emerald-500">{implementedSuggestions}</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            variants={itemVariants}
+            className="rounded-lg border bg-card p-3 shadow-sm transition-all hover:shadow-md duration-200"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-md bg-muted">
+                <Lightbulb className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Enviadas por ti</p>
+                <p className="text-xl font-bold">{userSuggestionsCount}</p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Columna izquierda - Formulario de envío */}
-        <div className="lg:col-span-1">
-          <div className="bg-card rounded-xl shadow-sm p-6 border relative overflow-hidden">
+        <motion.div variants={itemVariants} className="lg:col-span-1">
+          <div className="bg-card rounded-lg shadow-sm p-6 border relative overflow-hidden">
             {/* Decoración sutil en el fondo */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 z-0"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 rounded-full -ml-12 -mb-12 z-0"></div>
@@ -82,7 +152,7 @@ export default function SuggestionsPage() {
               <SuggestionForm />
               
               {userSuggestionsCount > 0 && !userSuggestions.isLoading && (
-                <div className="mt-6 p-4 rounded-lg bg-muted/50 border border-border/50">
+                <div className="mt-6 p-4 rounded-lg bg-muted/30 border border-border/50">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="h-4 w-4 text-primary" />
                     <p className="text-sm font-medium">¡Gracias por tus aportaciones!</p>
@@ -95,17 +165,17 @@ export default function SuggestionsPage() {
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
         
         {/* Columna derecha - Listados de sugerencias */}
-        <div className="lg:col-span-2">
+        <motion.div variants={itemVariants} className="lg:col-span-2">
           {isAdmin ? (
             <Tabs defaultValue="admin" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="admin" className="rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <TabsTrigger value="admin">
                   Administrar sugerencias
                 </TabsTrigger>
-                <TabsTrigger value="user" className="rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <TabsTrigger value="user">
                   Mis sugerencias
                 </TabsTrigger>
               </TabsList>
@@ -119,8 +189,8 @@ export default function SuggestionsPage() {
           ) : (
             <UserSuggestionList />
           )}
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }
