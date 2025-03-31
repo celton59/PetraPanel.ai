@@ -47,7 +47,7 @@ export function YoutubeChannelSelector({ projectId, onChannelSelect }: YoutubeCh
   
   // Obtener canales del proyecto
   const { 
-    data: projectChannels,
+    data: projectChannels = [],
     isLoading: isLoadingProjectChannels,
     refetch: refetchProjectChannels
   } = getProjectChannels(projectId);
