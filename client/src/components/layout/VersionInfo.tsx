@@ -34,6 +34,36 @@ interface ChangelogEntry {
 // Historial de versiones
 const versionHistory: ChangelogEntry[] = [
   {
+    version: '3.0.0',
+    date: '31.03.2025',
+    changes: [
+      { 
+        type: 'new', 
+        description: 'Métricas de videos en tiempo real con datos reales de la base de datos'
+      },
+      { 
+        type: 'new', 
+        description: 'Widget de Sugerencias pendientes en el panel de control visible para todos los usuarios'
+      },
+      { 
+        type: 'improved', 
+        description: 'Actualización automática de métricas en el dashboard al cambiar entre páginas'
+      },
+      { 
+        type: 'improved', 
+        description: 'Refresco periódico de datos cada 60 segundos sin necesidad de interacción del usuario'
+      },
+      { 
+        type: 'improved', 
+        description: 'Notificaciones más prominentes sobre enlaces de afiliados en la descripción de videos'
+      },
+      { 
+        type: 'fixed', 
+        description: 'Solucionado problema con calendario de límites personalizados que realizaba peticiones infinitas'
+      }
+    ]
+  },
+  {
     version: '2.9.0',
     date: '26.05.2025',
     changes: [
