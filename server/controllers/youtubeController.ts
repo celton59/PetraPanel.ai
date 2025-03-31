@@ -694,7 +694,9 @@ async function publishVideoToYoutube(req: Request, res: Response): Promise<Respo
       // Es un archivo local
       videoFilePath = path.join(process.cwd(), video.videoUrl);
       
-      if (!fs.existsSync(videoFilePath)) {
+      // Usar fs nativo para verificar existencia de archivo
+      const fsNative = await import('node:fs');
+      if (!fsNative.existsSync(videoFilePath)) {
         return res.status(404).json({
           success: false,
           message: 'El archivo de video no existe en el servidor'

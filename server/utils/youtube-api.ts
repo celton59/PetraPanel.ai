@@ -194,13 +194,14 @@ export async function uploadVideo(
   try {
     const youtube = createYoutubeClient(accessToken);
     
-    if (!fs.existsSync(videoPath)) {
+    // Usar fs nativo para todas las operaciones de archivo
+    const fsNative = await import('node:fs');
+    
+    if (!fsNative.existsSync(videoPath)) {
       throw new Error(`El archivo de video no existe en la ruta: ${videoPath}`);
     }
     
-    const fileSize = fs.statSync(videoPath).size;
-    // Usar fs nativo para createReadStream
-    const fsNative = await import('node:fs');
+    const fileSize = fsNative.statSync(videoPath).size;
     const fileStream = fsNative.createReadStream(videoPath);
     
     const response = await youtube.videos.insert({
