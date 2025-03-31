@@ -3,7 +3,8 @@ import { db } from '@db/index';
 import { videos, youtubeChannels, projectYoutubeChannels } from '@db/schema';
 import { eq, and } from 'drizzle-orm';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
+import axios from 'axios';
 import { 
   generateAuthUrl, 
   getTokensFromCode, 
@@ -643,14 +644,60 @@ async function publishVideoToYoutube(req: Request, res: Response): Promise<Respo
       });
     }
     
-    // Obtener la ruta completa al archivo de video
-    const videoFilePath = path.join(process.cwd(), video.videoUrl);
+    // Determinar si la URL es local o remota (S3)
+    let videoFilePath: string;
+    let isRemoteFile = false;
     
-    if (!fs.existsSync(videoFilePath)) {
-      return res.status(404).json({
-        success: false,
-        message: 'El archivo de video no existe en el servidor'
-      });
+    // Comprobar si la URL es remota (comienza con http:// o https://)
+    if (video.videoUrl.startsWith('http://') || video.videoUrl.startsWith('https://')) {
+      isRemoteFile = true;
+      
+      // Crear directorio temporal si no existe
+      const tempDir = path.join(process.cwd(), 'temp');
+      await fs.ensureDir(tempDir);
+      
+      // Generar un nombre de archivo único
+      const tempFileName = `temp-video-${Date.now()}.mp4`;
+      videoFilePath = path.join(tempDir, tempFileName);
+      
+      console.log(`Video remoto detectado: ${video.videoUrl}`);
+      console.log(`Descargando a: ${videoFilePath}`);
+      
+      try {
+        // Descargar el archivo remoto
+        const response = await axios({
+          method: 'GET',
+          url: video.videoUrl,
+          responseType: 'stream'
+        });
+        
+        // Guardar el archivo descargado
+        const writer = fs.createWriteStream(videoFilePath);
+        response.data.pipe(writer);
+        
+        await new Promise<void>((resolve, reject) => {
+          writer.on('finish', resolve);
+          writer.on('error', reject);
+        });
+        
+        console.log('Descarga completada con éxito');
+      } catch (downloadError) {
+        console.error('Error al descargar el archivo remoto:', downloadError);
+        return res.status(500).json({
+          success: false,
+          message: 'Error al descargar el archivo de video desde S3'
+        });
+      }
+    } else {
+      // Es un archivo local
+      videoFilePath = path.join(process.cwd(), video.videoUrl);
+      
+      if (!fs.existsSync(videoFilePath)) {
+        return res.status(404).json({
+          success: false,
+          message: 'El archivo de video no existe en el servidor'
+        });
+      }
     }
     
     // Subir el video a YouTube
@@ -664,6 +711,17 @@ async function publishVideoToYoutube(req: Request, res: Response): Promise<Respo
         privacyStatus: privacyStatus || 'unlisted'
       }
     );
+    
+    // Eliminar el archivo temporal si era remoto
+    if (isRemoteFile) {
+      try {
+        await fs.remove(videoFilePath);
+        console.log(`Archivo temporal eliminado: ${videoFilePath}`);
+      } catch (cleanupError) {
+        console.error('Error al eliminar archivo temporal:', cleanupError);
+        // No interrumpimos el flujo por un error de limpieza
+      }
+    }
     
     if (!uploadedVideo || !uploadedVideo.id) {
       return res.status(500).json({

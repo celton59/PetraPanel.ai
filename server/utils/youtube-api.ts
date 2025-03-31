@@ -1,5 +1,5 @@
 import { google, youtube_v3 } from 'googleapis';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 
 // Configuración OAuth para YouTube API
