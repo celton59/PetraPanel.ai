@@ -323,6 +323,10 @@ async function getYoutubeAuthUrl(req: Request, res: Response): Promise<Response>
     // Generar URL de autorización
     const { authUrl } = generateAuthUrl();
     
+    // Registrar la URL de redirección para depuración
+    const redirectUri = process.env.YOUTUBE_REDIRECT_URI || 'http://localhost:3000/api/youtube/oauth-callback';
+    console.log('URL de redirección OAuth configurada:', redirectUri);
+    
     // Almacenar el ID del canal en la sesión para recuperarlo después
     req.session.youtubeAuthChannel = channelId;
     
@@ -346,6 +350,10 @@ async function handleOAuthCallback(req: Request, res: Response): Promise<void> {
   try {
     const { code } = req.query;
     const channelId = req.session.youtubeAuthChannel;
+    
+    // Registrar la URL de redirección para depuración
+    const redirectUri = process.env.YOUTUBE_REDIRECT_URI || 'http://localhost:3000/api/youtube/oauth-callback';
+    console.log('URL de redirección OAuth en callback:', redirectUri);
     
     if (!code || !channelId) {
       res.redirect('/error?message=Autorización inválida');
