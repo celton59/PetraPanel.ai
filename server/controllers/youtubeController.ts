@@ -672,7 +672,8 @@ async function publishVideoToYoutube(req: Request, res: Response): Promise<Respo
         });
         
         // Guardar el archivo descargado
-        const writer = fs.createWriteStream(videoFilePath);
+        // fs-extra no tiene createWriteStream directamente, así que usamos fs nativo
+        const writer = require('fs').createWriteStream(videoFilePath);
         response.data.pipe(writer);
         
         await new Promise<void>((resolve, reject) => {

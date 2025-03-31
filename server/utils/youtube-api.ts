@@ -199,7 +199,8 @@ export async function uploadVideo(
     }
     
     const fileSize = fs.statSync(videoPath).size;
-    const fileStream = fs.createReadStream(videoPath);
+    // Usar fs nativo para createReadStream
+    const fileStream = require('fs').createReadStream(videoPath);
     
     const response = await youtube.videos.insert({
       part: ['snippet', 'status'],
