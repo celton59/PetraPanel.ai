@@ -8,11 +8,13 @@ interface VideoStats {
     content_corrections: number;
     available: number;
     final_review: number;
+    deleted: number; // Añadimos el contador de videos eliminados
     // Podemos agregar más estados aquí según sea necesario
     media_corrections?: number;
     media_review?: number;
     completed?: number;
   };
+  deletedCount?: number; // También puede venir como propiedad independiente
 }
 
 /**

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, RefreshCw, Video, FileCheck, Loader2 } from "lucide-react";
+import { Upload, RefreshCw, Video, FileCheck, Loader2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useDashboardVideoStats } from "@/hooks/useDashboardVideoStats";
@@ -32,6 +32,12 @@ export function VideoStats() {
       icon: FileCheck,
       color: "text-green-500",
       bgColor: "bg-green-500/10"
+    },
+    deleted: {
+      label: "Eliminados",
+      icon: Trash2,
+      color: "text-red-500",
+      bgColor: "bg-red-500/10"
     }
   };
   
@@ -83,7 +89,11 @@ export function VideoStats() {
     bgColor: statusConfig[key as keyof typeof statusConfig]?.bgColor || "bg-gray-500/10"
   }));
 
+  // Total de videos activos para el cálculo de porcentajes
   const total = data?.totalVideos || 0;
+  
+  // Total incluyendo eliminados para mostrar estadísticas completas
+  const totalWithDeleted = total + (data?.stateCounts?.deleted || 0);
 
   return (
     <Card className="border border-muted/60 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
@@ -116,7 +126,9 @@ export function VideoStats() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold">{metric.value}</span>
                   <span className="text-xs text-muted-foreground">
-                    ({((metric.value / total) * 100).toFixed(1)}%)
+                    {metric.label === "Eliminados" 
+                      ? `(${((metric.value / totalWithDeleted) * 100).toFixed(1)}% del total)`
+                      : `(${((metric.value / total) * 100).toFixed(1)}%)`}
                   </span>
                 </div>
               </div>
@@ -125,7 +137,11 @@ export function VideoStats() {
                 <motion.div 
                   className={cn("h-full", metric.color.replace("text-", "bg-"))}
                   initial={{ width: 0 }}
-                  animate={{ width: `${(metric.value / total) * 100}%` }}
+                  animate={{ 
+                    width: metric.label === "Eliminados" 
+                      ? `${(metric.value / totalWithDeleted) * 100}%` 
+                      : `${(metric.value / total) * 100}%` 
+                  }}
                   transition={{ duration: 1, delay: 0.2 + index * 0.1 }}
                 />
               </div>
@@ -134,8 +150,21 @@ export function VideoStats() {
         </div>
 
         <div className="flex justify-between items-center mt-6 pt-4 border-t border-muted/30">
-          <span className="text-sm font-medium text-muted-foreground">Total de videos</span>
-          <span className="text-xl font-bold">{total}</span>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">Total videos activos</span>
+              <span className="text-xl font-bold">{total}</span>
+            </div>
+            {(data?.stateCounts?.deleted || 0) > 0 && (
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs font-medium text-muted-foreground flex items-center">
+                  <Trash2 className="h-3 w-3 mr-1 text-red-500" />
+                  Total con eliminados ({data?.stateCounts?.deleted || 0} eliminados)
+                </span>
+                <span className="text-sm font-semibold">{totalWithDeleted}</span>
+              </div>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

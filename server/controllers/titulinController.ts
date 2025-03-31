@@ -350,23 +350,37 @@ async function getVideoStats(req: Request, res: Response): Promise<Response> {
       .where(eq(videos.isDeleted, false)) // Filtramos solo videos activos
       .execute();
 
+    // Consulta adicional para obtener el recuento de videos eliminados
+    const [deletedStats] = await db
+      .select({
+        deleted_count: count()
+      })
+      .from(videos)
+      .where(eq(videos.isDeleted, true))
+      .execute();
+
     // Asegurar que los valores son números
     const totalVideos = videoStats.total_videos ?? 0;
+    const deletedCount = deletedStats.deleted_count ?? 0;
+    
     const stateCountsObj = {
       'upload_media': videoStats.upload_media_count || 0,
       'content_corrections': videoStats.content_corrections_count || 0,
       'available': videoStats.available_count || 0,
-      'final_review': videoStats.final_review_count || 0
+      'final_review': videoStats.final_review_count || 0,
+      'deleted': deletedCount // Añadimos el conteo de videos eliminados
     };
 
     console.log('Respuesta final:', {
       totalVideos,
-      stateCounts: stateCountsObj
+      stateCounts: stateCountsObj,
+      deletedCount // Log para confirmar
     });
 
     return res.status(200).json({
       totalVideos,
-      stateCounts: stateCountsObj
+      stateCounts: stateCountsObj,
+      deletedCount // Incluimos el conteo de videos eliminados en la respuesta
     });
   } catch (error) {
     console.error('Error al obtener estadísticas de videos:', error);
