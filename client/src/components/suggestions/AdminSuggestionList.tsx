@@ -283,47 +283,16 @@ export function AdminSuggestionList() {
           </Select>
         </div>
         
-        {/* Resumen de estado de sugerencias */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <div className="rounded-lg border bg-card p-3 shadow-sm transition-colors hover:bg-muted/50 flex items-center gap-3">
-            <div className="p-2 rounded-md bg-amber-500/10">
-              <Clock className="h-5 w-5 text-amber-500" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Pendientes</p>
-              <p className="text-xl font-bold">{pendingCount}</p>
-            </div>
-          </div>
-          
-          <div className="rounded-lg border bg-card p-3 shadow-sm transition-colors hover:bg-muted/50 flex items-center gap-3">
-            <div className="p-2 rounded-md bg-blue-500/10">
-              <MessageSquare className="h-5 w-5 text-blue-500" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">En revisión</p>
-              <p className="text-xl font-bold">{inReviewCount}</p>
-            </div>
-          </div>
-          
-          <div className="rounded-lg border bg-card p-3 shadow-sm transition-colors hover:bg-muted/50 flex items-center gap-3">
-            <div className="p-2 rounded-md bg-emerald-500/10">
-              <CheckCircle className="h-5 w-5 text-emerald-500" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Implementadas</p>
-              <p className="text-xl font-bold">{implementedCount}</p>
-            </div>
-          </div>
-          
-          <div className="rounded-lg border bg-card p-3 shadow-sm transition-colors hover:bg-muted/50 flex items-center gap-3">
-            <div className="p-2 rounded-md bg-red-500/10">
-              <XCircle className="h-5 w-5 text-red-500" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Rechazadas</p>
-              <p className="text-xl font-bold">{rejectedCount}</p>
-            </div>
-          </div>
+        {/* Controles de filtrado */}
+        <div className="flex justify-end mb-4">
+          <Button
+            variant={showFilters ? "default" : "outline"}
+            onClick={() => setShowFilters(!showFilters)}
+            className="gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            {showFilters ? "Ocultar filtros" : "Mostrar filtros"}
+          </Button>
         </div>
         
         {/* Filtros */}
@@ -352,7 +321,7 @@ export function AdminSuggestionList() {
                   <SelectValue placeholder="Todas las categorías" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas las categorías</SelectItem>
+                  <SelectItem value="all">Todas las categorías</SelectItem>
                   {(categories.data || []).map((category: string) => (
                     <SelectItem key={category} value={category}>
                       {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -372,7 +341,7 @@ export function AdminSuggestionList() {
                   <SelectValue placeholder="Todos los estados" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los estados</SelectItem>
+                  <SelectItem value="all">Todos los estados</SelectItem>
                   <SelectItem value="pending">Pendiente</SelectItem>
                   <SelectItem value="reviewed">En revisión</SelectItem>
                   <SelectItem value="implemented">Implementada</SelectItem>
