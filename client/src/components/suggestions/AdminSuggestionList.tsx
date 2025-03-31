@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSuggestions, Suggestion } from '@/hooks/useSuggestions';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Loader2, 
   AlertCircle, 
@@ -15,11 +18,17 @@ import {
   Filter,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  User,
+  Calendar,
+  Tag,
+  MessageSquare,
+  Sparkles,
+  LayoutDashboard
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 export function AdminSuggestionList() {
   const { allSuggestions, updateSuggestionStatus, filters, setFilters, categories } = useSuggestions();
@@ -28,27 +37,47 @@ export function AdminSuggestionList() {
   const [status, setStatus] = useState<string>('');
   const [adminNotes, setAdminNotes] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<'all' | 'pending'>('pending');
 
   // Estados de carga y error
   if (allSuggestions.isLoading) {
     return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            <Skeleton className="h-8 w-48" />
-          </CardTitle>
-          <CardDescription>
-            <Skeleton className="h-4 w-full" />
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="border rounded-lg p-4 space-y-2">
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-4 w-1/4" />
-              <Skeleton className="h-16 w-full" />
+      <Card className="w-full shadow-sm">
+        <CardHeader className="border-b bg-muted/30">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <LayoutDashboard className="h-5 w-5 text-primary" />
+                <Skeleton className="h-8 w-48" />
+              </CardTitle>
+              <CardDescription>
+                <Skeleton className="h-4 w-full mt-2" />
+              </CardDescription>
             </div>
-          ))}
+            <Skeleton className="h-9 w-9 rounded-md" />
+          </div>
+        </CardHeader>
+        <CardContent className="p-6 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Skeleton className="h-10 w-full rounded-md" />
+            <Skeleton className="h-10 w-full rounded-md" />
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
+          <div className="mt-4 space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="border rounded-xl p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-6 w-[80px] rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-16 w-full" />
+                <div className="flex justify-end">
+                  <Skeleton className="h-9 w-32 rounded-md" />
+                </div>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     );
@@ -66,7 +95,23 @@ export function AdminSuggestionList() {
     );
   }
 
-  const suggestions = allSuggestions.data;
+  const suggestions = allSuggestions.data || [];
+  
+  // Filtrar por modo de vista (pendientes o todas)
+  const filteredByViewMode = viewMode === 'pending'
+    ? suggestions.filter(s => s.status === 'pending')
+    : suggestions;
+    
+  // Ordenar por fecha (más recientes primero)
+  const sortedSuggestions = [...filteredByViewMode].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+  
+  // Contadores para resumen
+  const pendingCount = suggestions.filter(s => s.status === 'pending').length;
+  const implementedCount = suggestions.filter(s => s.status === 'implemented').length;
+  const inReviewCount = suggestions.filter(s => s.status === 'reviewed').length;
+  const rejectedCount = suggestions.filter(s => s.status === 'rejected').length;
 
   const handleStatusUpdate = async () => {
     if (!selectedSuggestion || !status) return;
@@ -130,7 +175,7 @@ export function AdminSuggestionList() {
       case 'pending':
         return <Clock className="h-4 w-4" />;
       case 'reviewed':
-        return <Loader2 className="h-4 w-4" />;
+        return <MessageSquare className="h-4 w-4" />;
       case 'implemented':
         return <CheckCircle className="h-4 w-4" />;
       case 'rejected':
@@ -139,27 +184,149 @@ export function AdminSuggestionList() {
         return null;
     }
   };
+  
+  // Función para determinar el color de fondo basado en el estado
+  const getStatusBackgroundClass = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-amber-500/5 border-amber-500/20';
+      case 'reviewed':
+        return 'bg-blue-500/5 border-blue-500/20';
+      case 'implemented':
+        return 'bg-emerald-500/5 border-emerald-500/20';
+      case 'rejected':
+        return 'bg-red-500/5 border-red-500/20';
+      default:
+        return 'bg-card';
+    }
+  };
+
+  // Obtener tiempo relativo desde la creación
+  const getRelativeTime = (dateString: string) => {
+    return formatDistanceToNow(new Date(dateString), { 
+      addSuffix: true, 
+      locale: es 
+    });
+  };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <Card className="w-full shadow-sm">
+      <CardHeader className="border-b bg-muted/30">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Administrar sugerencias</CardTitle>
-            <CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <LayoutDashboard className="h-5 w-5 text-primary" />
+              Administración de sugerencias
+            </CardTitle>
+            <CardDescription className="mt-1">
               Gestiona las sugerencias de los usuarios y actualiza su estado
             </CardDescription>
           </div>
-          <Button 
-            variant="outline" 
-            size="icon"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <Filter className="h-4 w-4" />
-          </Button>
+          
+          <div className="flex items-center gap-2">
+            <Tabs
+              value={viewMode}
+              onValueChange={(value) => setViewMode(value as 'all' | 'pending')}
+              className="hidden md:block"
+            >
+              <TabsList className="h-9">
+                <TabsTrigger
+                  value="pending"
+                  className="text-xs px-3 h-8 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                >
+                  Pendientes
+                  {pendingCount > 0 && (
+                    <Badge variant="secondary" className="ml-1.5 h-5 text-[10px]">
+                      {pendingCount}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="all"
+                  className="text-xs px-3 h-8 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                >
+                  Todas
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            <Button 
+              variant={showFilters ? "default" : "outline"}
+              size="icon"
+              onClick={() => setShowFilters(!showFilters)}
+              className="h-9 w-9"
+            >
+              <Filter className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
-      <CardContent>
+      
+      <CardContent className="p-6">
+        {/* Vista móvil del selector de modo */}
+        <div className="md:hidden mb-4">
+          <Select
+            value={viewMode}
+            onValueChange={(value) => setViewMode(value as 'all' | 'pending')}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Selecciona el modo de vista" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">
+                Pendientes ({pendingCount})
+              </SelectItem>
+              <SelectItem value="all">
+                Todas las sugerencias
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Resumen de estado de sugerencias */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <div className="rounded-lg border bg-card p-3 shadow-sm transition-colors hover:bg-muted/50 flex items-center gap-3">
+            <div className="p-2 rounded-md bg-amber-500/10">
+              <Clock className="h-5 w-5 text-amber-500" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Pendientes</p>
+              <p className="text-xl font-bold">{pendingCount}</p>
+            </div>
+          </div>
+          
+          <div className="rounded-lg border bg-card p-3 shadow-sm transition-colors hover:bg-muted/50 flex items-center gap-3">
+            <div className="p-2 rounded-md bg-blue-500/10">
+              <MessageSquare className="h-5 w-5 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">En revisión</p>
+              <p className="text-xl font-bold">{inReviewCount}</p>
+            </div>
+          </div>
+          
+          <div className="rounded-lg border bg-card p-3 shadow-sm transition-colors hover:bg-muted/50 flex items-center gap-3">
+            <div className="p-2 rounded-md bg-emerald-500/10">
+              <CheckCircle className="h-5 w-5 text-emerald-500" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Implementadas</p>
+              <p className="text-xl font-bold">{implementedCount}</p>
+            </div>
+          </div>
+          
+          <div className="rounded-lg border bg-card p-3 shadow-sm transition-colors hover:bg-muted/50 flex items-center gap-3">
+            <div className="p-2 rounded-md bg-red-500/10">
+              <XCircle className="h-5 w-5 text-red-500" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Rechazadas</p>
+              <p className="text-xl font-bold">{rejectedCount}</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Filtros */}
         {showFilters && (
           <div className="mb-6 p-4 border rounded-lg grid gap-4 grid-cols-1 md:grid-cols-3">
             <div>
@@ -216,41 +383,82 @@ export function AdminSuggestionList() {
           </div>
         )}
 
-        {suggestions && (suggestions.length > 0) ? (
-          <div className="space-y-4">
-            {(suggestions || []).map((suggestion: Suggestion) => (
-              <div key={suggestion.id} className="border rounded-lg p-4 space-y-2">
-                <div className="flex items-center justify-between">
+        {/* Lista de sugerencias */}
+        {sortedSuggestions.length > 0 ? (
+          <div className="space-y-6">
+            {sortedSuggestions.map((suggestion: Suggestion) => (
+              <div 
+                key={suggestion.id}
+                className={cn(
+                  "border rounded-xl p-5 space-y-3 transition-all duration-200",
+                  getStatusBackgroundClass(suggestion.status),
+                  "hover:shadow-md"
+                )}
+              >
+                <div className="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-2">
                   <h3 className="text-lg font-semibold">{suggestion.title}</h3>
-                  <Badge variant={getStatusBadgeVariant(suggestion.status)}>
-                    <span className="flex items-center gap-1">
+                  <Badge variant={getStatusBadgeVariant(suggestion.status)} className="h-6">
+                    <span className="flex items-center gap-1.5">
                       {getStatusIcon(suggestion.status)}
                       {getStatusTranslation(suggestion.status)}
                     </span>
                   </Badge>
                 </div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <span>Por: {suggestion.userName || 'Usuario'}</span>
-                  <span className="mx-2">•</span>
-                  <span>{suggestion.category}</span>
-                  <span className="mx-2">•</span>
-                  <span>
-                    {format(new Date(suggestion.created_at), "d 'de' MMMM, yyyy", { locale: es })}
-                  </span>
+                
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <User className="h-3.5 w-3.5" />
+                    <span>{suggestion.userName || 'Usuario'}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <Tag className="h-3.5 w-3.5" />
+                    <span>{suggestion.category}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5" />
+                    <span title={format(new Date(suggestion.created_at), "d 'de' MMMM, yyyy, HH:mm", { locale: es })}>
+                      {getRelativeTime(suggestion.created_at)}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-sm mt-2">{suggestion.description}</p>
+                
+                <div className="mt-3 text-sm">
+                  <p className="whitespace-pre-line">{suggestion.description}</p>
+                </div>
+                
                 {suggestion.adminNotes && (
-                  <div className="mt-2 p-3 bg-muted rounded-md">
-                    <p className="text-sm font-semibold">Respuesta del administrador:</p>
-                    <p className="text-sm">{suggestion.adminNotes}</p>
+                  <div className={cn(
+                    "mt-4 p-4 rounded-lg border relative",
+                    suggestion.status === 'implemented' ? "bg-emerald-500/5 border-emerald-500/20" : 
+                    suggestion.status === 'rejected' ? "bg-red-500/5 border-red-500/20" : 
+                    "bg-blue-500/5 border-blue-500/20"
+                  )}>
+                    <div className="absolute top-0 left-6 transform -translate-y-1/2 px-2 text-xs font-medium bg-background">
+                      Respuesta del administrador
+                    </div>
+                    
+                    {suggestion.status === 'implemented' && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <Sparkles className="h-4 w-4 text-emerald-500" />
+                        <p className="text-sm font-medium text-emerald-600">¡Implementada con éxito!</p>
+                      </div>
+                    )}
+                    
+                    <p className="text-sm whitespace-pre-line">{suggestion.adminNotes}</p>
                   </div>
                 )}
+                
                 <div className="flex justify-end pt-2">
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => openUpdateDialog(suggestion.id, suggestion.status, suggestion.adminNotes)}
+                    className="gap-2"
                   >
+                    {status === 'pending' && <Clock className="h-4 w-4" />}
+                    {status === 'implemented' && <CheckCircle className="h-4 w-4" />}
                     Actualizar estado
                   </Button>
                 </div>
@@ -258,15 +466,24 @@ export function AdminSuggestionList() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">
-              No hay sugerencias que coincidan con los filtros seleccionados.
+          <div className="text-center py-16 px-6 rounded-lg border border-dashed">
+            <div className="flex justify-center mb-3">
+              <div className="p-3 rounded-full bg-primary/10">
+                <MessageSquare className="h-6 w-6 text-primary" />
+              </div>
+            </div>
+            <h3 className="text-lg font-medium mb-1">No hay sugerencias que coincidan</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              {viewMode === 'pending' 
+                ? "No hay sugerencias pendientes de revisión." 
+                : "No se encontraron sugerencias con los filtros seleccionados."}
             </p>
           </div>
         )}
 
+        {/* Diálogo para actualizar sugerencias */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Actualizar estado de la sugerencia</DialogTitle>
               <DialogDescription>
@@ -282,10 +499,22 @@ export function AdminSuggestionList() {
                     <SelectValue placeholder="Selecciona un estado" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pendiente</SelectItem>
-                    <SelectItem value="reviewed">En revisión</SelectItem>
-                    <SelectItem value="implemented">Implementada</SelectItem>
-                    <SelectItem value="rejected">Rechazada</SelectItem>
+                    <SelectItem value="pending" className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-amber-500 inline mr-1" />
+                      Pendiente
+                    </SelectItem>
+                    <SelectItem value="reviewed" className="flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4 text-blue-500 inline mr-1" />
+                      En revisión
+                    </SelectItem>
+                    <SelectItem value="implemented" className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-emerald-500 inline mr-1" />
+                      Implementada
+                    </SelectItem>
+                    <SelectItem value="rejected" className="flex items-center gap-2">
+                      <XCircle className="h-4 w-4 text-red-500 inline mr-1" />
+                      Rechazada
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -308,9 +537,10 @@ export function AdminSuggestionList() {
               <Button 
                 onClick={handleStatusUpdate}
                 disabled={updateSuggestionStatus.isPending || !status}
+                className="gap-2"
               >
                 {updateSuggestionStatus.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 )}
                 Guardar cambios
               </Button>
