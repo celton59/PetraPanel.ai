@@ -68,6 +68,8 @@ export default function YoutubeAdminPage() {
     refetchChannels,
     createChannel,
     isCreatingChannel,
+    deleteChannel,
+    isDeletingChannel,
     linkChannelToProject,
     isLinkingChannel,
     unlinkChannelFromProject,
@@ -87,15 +89,15 @@ export default function YoutubeAdminPage() {
 
   // Cargar los canales de proyectos al cambiar el canal seleccionado
   useEffect(() => {
-    if (selectedChannel) {
-      loadProjectChannels(selectedChannel.channelId);
+    if (selectedChannel && selectedChannel.id) {
+      loadProjectChannels(selectedChannel.id);
     }
   }, [selectedChannel]);
 
-  const loadProjectChannels = async (channelId: string) => {
+  const loadProjectChannels = async (channelId: number) => {
     setLoadingProjectChannels(true);
     try {
-      const result = await getProjectChannels(Number(channelId));
+      const result = await getProjectChannels(channelId);
       if (result && Array.isArray(result.data)) {
         // Convertir el formato de canal de YouTube a formato de ProjectChannel
         const formattedChannels = result.data.map((channel: any) => ({
@@ -162,7 +164,7 @@ export default function YoutubeAdminPage() {
         isDefault: false,
       });
       if (selectedChannel) {
-        loadProjectChannels(selectedChannel.channelId);
+        loadProjectChannels(selectedChannel.id);
       }
       toast.success('Canal vinculado al proyecto exitosamente');
     } catch (error) {
@@ -171,18 +173,18 @@ export default function YoutubeAdminPage() {
     }
   };
 
-  const handleUnlinkChannel = async (projectChannelId: number) => {
+  const handleUnlinkChannel = async (projectChannelEntry: ProjectChannel) => {
     if (!confirm('¿Estás seguro de que deseas desvincular este canal del proyecto?')) {
       return;
     }
 
     try {
       await unlinkChannelFromProject({
-        projectId: 0,
-        channelId: ''
+        projectId: projectChannelEntry.project_id,
+        channelId: projectChannelEntry.channel_id
       });
       if (selectedChannel) {
-        loadProjectChannels(selectedChannel.channelId);
+        loadProjectChannels(selectedChannel.id);
       }
       toast.success('Canal desvinculado del proyecto exitosamente');
     } catch (error) {
@@ -198,6 +200,29 @@ export default function YoutubeAdminPage() {
     } catch (error) {
       console.error('Error al obtener URL de autorización:', error);
       toast.error('Error al iniciar el proceso de autorización');
+    }
+  };
+
+  const handleDeleteChannel = async (channel: YoutubeChannel) => {
+    if (!confirm(`¿Estás seguro de que deseas eliminar el canal "${channel.name}"? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+
+    try {
+      await deleteChannel(channel.channelId);
+      setSelectedChannel(null);
+      toast.success('Canal eliminado correctamente');
+    } catch (error: any) {
+      console.error('Error al eliminar canal:', error);
+      if (error.response?.data?.message?.includes('vinculado')) {
+        toast.error('No se puede eliminar el canal', {
+          description: 'El canal está vinculado a uno o más proyectos. Primero debes desvincular el canal de todos los proyectos.'
+        });
+      } else {
+        toast.error('Error al eliminar el canal', {
+          description: error.response?.data?.message || 'Se produjo un error al intentar eliminar el canal'
+        });
+      }
     }
   };
 
@@ -410,7 +435,7 @@ export default function YoutubeAdminPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handleUnlinkChannel(pc.id)}
+                                onClick={() => handleUnlinkChannel(pc)}
                                 disabled={isUnlinkingChannel}
                               >
                                 <Trash2 className="h-4 w-4 text-destructive" />
@@ -424,12 +449,26 @@ export default function YoutubeAdminPage() {
                 </Tabs>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button
-                  variant="outline"
-                  onClick={() => setSelectedChannel(null)}
-                >
-                  Cerrar
-                </Button>
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedChannel(null)}
+                  >
+                    Cerrar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleDeleteChannel(selectedChannel)}
+                    disabled={isDeletingChannel || projectChannels.length > 0}
+                  >
+                    {isDeletingChannel ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="mr-2 h-4 w-4" />
+                    )}
+                    Eliminar Canal
+                  </Button>
+                </div>
                 <Button
                   onClick={() => handleAuthChannel(selectedChannel.channelId)}
                   disabled={isGettingAuthUrl || selectedChannel.isAuthorized}

@@ -258,6 +258,25 @@ export function useYoutubeChannels() {
     }
   });
 
+  // Eliminar un canal
+  const deleteChannelMutation = useMutation({
+    mutationFn: async (channelId: string) => {
+      await refreshCSRFToken();
+      const response = await api.delete(`/api/youtube/channels/${channelId}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/youtube/channels'] });
+      toast.success('Canal eliminado correctamente');
+    },
+    onError: (error: any) => {
+      console.error('Error al eliminar canal:', error);
+      toast.error('Error al eliminar canal', {
+        description: error.response?.data?.message || 'Se produjo un error al eliminar el canal'
+      });
+    }
+  });
+
   return {
     // Queries
     channels,
@@ -269,6 +288,7 @@ export function useYoutubeChannels() {
     
     // Mutations
     createChannel: createChannelMutation.mutate,
+    deleteChannel: deleteChannelMutation.mutate,
     linkChannelToProject: linkChannelToProjectMutation.mutate,
     unlinkChannelFromProject: unlinkChannelFromProjectMutation.mutate,
     getAuthUrl: getAuthUrlMutation.mutate,
@@ -276,6 +296,7 @@ export function useYoutubeChannels() {
     
     // Mutation states
     isCreatingChannel: createChannelMutation.isPending,
+    isDeletingChannel: deleteChannelMutation.isPending,
     isLinkingChannel: linkChannelToProjectMutation.isPending,
     isUnlinkingChannel: unlinkChannelFromProjectMutation.isPending,
     isGettingAuthUrl: getAuthUrlMutation.isPending,

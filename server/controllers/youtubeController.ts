@@ -86,7 +86,7 @@ async function createYoutubeChannel(req: Request, res: Response): Promise<Respon
       const description = channelInfo.snippet?.description || '';
       const url = `https://www.youtube.com/channel/${channelId}`;
       const thumbnailUrl = channelInfo.snippet?.thumbnails?.default?.url || '';
-      const subscriberCount = channelInfo.statistics?.subscriberCount || '0';
+      const subscriberCount = parseInt(channelInfo.statistics?.subscriberCount || '0');
       const videoCount = parseInt(channelInfo.statistics?.videoCount || '0');
       
       // Crear el nuevo canal
@@ -645,6 +645,62 @@ async function getDefaultProjectChannel(req: Request, res: Response): Promise<Re
 }
 
 /**
+ * Elimina un canal de YouTube (siempre que no esté vinculado a ningún proyecto)
+ */
+async function deleteYoutubeChannel(req: Request, res: Response): Promise<Response> {
+  try {
+    const { channelId } = req.params;
+    
+    if (!channelId) {
+      return res.status(400).json({
+        success: false,
+        message: 'El ID del canal es obligatorio'
+      });
+    }
+    
+    // Comprobar si el canal existe
+    const [channel] = await db.select().from(youtubeChannels).where(
+      eq(youtubeChannels.channelId, channelId)
+    );
+    
+    if (!channel) {
+      return res.status(404).json({
+        success: false,
+        message: 'El canal no existe'
+      });
+    }
+    
+    // Comprobar si el canal está vinculado a algún proyecto
+    const channelLinks = await db.select().from(projectYoutubeChannels).where(
+      eq(projectYoutubeChannels.channelId, channelId)
+    );
+    
+    if (channelLinks.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No se puede eliminar el canal porque está vinculado a uno o más proyectos'
+      });
+    }
+    
+    // Eliminar el canal
+    await db.delete(youtubeChannels).where(
+      eq(youtubeChannels.channelId, channelId)
+    );
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Canal eliminado correctamente'
+    });
+  } catch (error) {
+    console.error('Error al eliminar canal:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error al eliminar canal'
+    });
+  }
+}
+
+/**
  * Configura las rutas para el controlador de YouTube
  */
 export function setupYoutubeRoutes(
@@ -657,6 +713,7 @@ export function setupYoutubeRoutes(
   // Rutas protegidas
   app.get('/api/youtube/channels', requireAuth, getYoutubeChannels);
   app.post('/api/youtube/channels', requireAuth, createYoutubeChannel);
+  app.delete('/api/youtube/channels/:channelId', requireAuth, deleteYoutubeChannel);
   app.get('/api/youtube/project/:projectId/channels', requireAuth, getProjectChannels);
   app.get('/api/youtube/project/:projectId/default-channel', requireAuth, getDefaultProjectChannel);
   app.post('/api/youtube/project-channel', requireAuth, linkChannelToProject);
