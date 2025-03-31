@@ -19,12 +19,12 @@ export function AffiliateInfoDialog({ trigger, variant = "button" }: AffiliateIn
   const defaultTrigger = variant === "icon" ? (
     <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-blue-500">
       <Info className="h-4 w-4" />
-      <span className="sr-only">Información sobre enlaces de afiliación</span>
+      <span className="sr-only">Instrucciones para enlaces</span>
     </Button>
   ) : (
     <Button variant="outline" size="sm" className="gap-2">
       <Info className="h-4 w-4" />
-      <span>Información sobre enlaces de afiliación</span>
+      <span>Instrucciones para enlaces</span>
     </Button>
   );
 
@@ -35,9 +35,9 @@ export function AffiliateInfoDialog({ trigger, variant = "button" }: AffiliateIn
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Enlaces de afiliación en videos</DialogTitle>
+          <DialogTitle>Instrucciones para enlaces en videos</DialogTitle>
           <DialogDescription>
-            Consejos para mejorar la experiencia de tus espectadores con enlaces de afiliación
+            Consejos para mejorar la experiencia de tus espectadores
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2 text-sm">
