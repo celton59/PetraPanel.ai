@@ -99,18 +99,18 @@ export default function YoutubeAdminPage() {
     try {
       const result = await getProjectChannels(channelId);
       if (result && Array.isArray(result.data)) {
-        // Convertir el formato de canal de YouTube a formato de ProjectChannel
-        const formattedChannels = result.data.map((channel: any) => ({
-          id: channel.linkId || channel.id,
-          project_id: Number(channel.projectId || 0),
-          channel_id: channel.channelId,
-          is_default: channel.isDefault || false,
-          created_at: channel.createdAt || new Date().toISOString(),
+        // Convertir el formato de respuesta a formato de ProjectChannel
+        const formattedChannels = result.data.map((projectLink: any) => ({
+          id: projectLink.id,
+          project_id: Number(projectLink.projectId),
+          channel_id: projectLink.channelId,
+          is_default: projectLink.isDefault || false,
+          created_at: projectLink.createdAt || new Date().toISOString(),
           project: {
-            id: Number(channel.projectId || 0),
-            name: channel.projectName || 'Proyecto sin nombre'
+            id: Number(projectLink.project.id),
+            name: projectLink.project.name || `Proyecto ${projectLink.projectId}`
           },
-          channel: channel
+          channel: selectedChannel // Ya tenemos los datos del canal seleccionado
         })) as ProjectChannel[];
         
         setProjectChannels(formattedChannels);
@@ -118,7 +118,7 @@ export default function YoutubeAdminPage() {
         setProjectChannels([]);
       }
     } catch (error) {
-      console.error('Error al cargar los canales del proyecto:', error);
+      console.error('Error al cargar los proyectos asociados al canal:', error);
       toast.error('Error al cargar los proyectos asociados al canal');
       setProjectChannels([]);
     } finally {

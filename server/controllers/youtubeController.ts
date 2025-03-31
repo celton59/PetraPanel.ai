@@ -259,6 +259,94 @@ async function getProjectChannels(req: Request, res: Response): Promise<Response
 }
 
 /**
+ * Obtiene los proyectos vinculados a un canal
+ */
+async function getChannelProjects(req: Request, res: Response): Promise<Response> {
+  try {
+    const { channelId } = req.params;
+    
+    // Verificar que el ID del canal sea numérico
+    const numericalChannelId = parseInt(channelId);
+    if (isNaN(numericalChannelId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El ID del canal debe ser un número'
+      });
+    }
+    
+    // Obtener el canal para verificar su channelId (ID externo de YouTube)
+    const [channel] = await db.select().from(youtubeChannels).where(
+      eq(youtubeChannels.id, numericalChannelId)
+    );
+    
+    if (!channel) {
+      return res.status(404).json({
+        success: false,
+        message: 'Canal no encontrado'
+      });
+    }
+    
+    // Aquí necesitamos importar la tabla de proyectos para obtener los nombres reales
+    const { projects } = await import('@db/schema');
+    
+    // Obtener los proyectos vinculados al canal usando su ID externo
+    const projectLinks = await db.select({
+      id: projectYoutubeChannels.id,
+      projectId: projectYoutubeChannels.projectId,
+      channelId: projectYoutubeChannels.channelId,
+      isDefault: projectYoutubeChannels.isDefault,
+      createdAt: projectYoutubeChannels.createdAt
+    }).from(projectYoutubeChannels).where(
+      eq(projectYoutubeChannels.channelId, channel.channelId)
+    );
+    
+    if (projectLinks.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        message: 'No hay proyectos vinculados a este canal'
+      });
+    }
+    
+    // Obtener información completa de cada proyecto
+    const result = await Promise.all(
+      projectLinks.map(async (link) => {
+        // Obtener el proyecto de la base de datos
+        const [project] = await db.select({
+          id: projects.id, 
+          name: projects.name
+        }).from(projects).where(
+          eq(projects.id, link.projectId)
+        );
+        
+        return {
+          id: link.id,
+          projectId: link.projectId,
+          channelId: link.channelId,
+          isDefault: link.isDefault,
+          createdAt: link.createdAt,
+          project: project || {
+            id: link.projectId,
+            name: `Proyecto ${link.projectId}` // Fallback si no se encuentra el proyecto
+          }
+        };
+      })
+    );
+    
+    return res.status(200).json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error('Error al obtener proyectos del canal:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error al obtener proyectos del canal'
+    });
+  }
+}
+
+/**
  * Elimina la vinculación entre un canal y un proyecto
  */
 async function unlinkChannelFromProject(req: Request, res: Response): Promise<Response> {
@@ -736,6 +824,7 @@ export function setupYoutubeRoutes(
   app.delete('/api/youtube/channels/:channelId', requireAuth, deleteYoutubeChannel);
   app.get('/api/youtube/project/:projectId/channels', requireAuth, getProjectChannels);
   app.get('/api/youtube/project/:projectId/default-channel', requireAuth, getDefaultProjectChannel);
+  app.get('/api/youtube/channel/:channelId/projects', requireAuth, getChannelProjects);
   app.post('/api/youtube/project-channel', requireAuth, linkChannelToProject);
   app.delete('/api/youtube/project/:projectId/channel/:channelId', requireAuth, unlinkChannelFromProject);
   app.get('/api/youtube/channel/:channelId/auth-url', requireAuth, getYoutubeAuthUrl);
