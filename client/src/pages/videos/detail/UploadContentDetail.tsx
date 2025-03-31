@@ -289,7 +289,7 @@ export function UploadContentDetail({
           />
         </div>
 
-        {/* Información sobre enlaces de afiliación - Advertencia mejorada */}
+        {/* Advertencia sobre enlaces en videos */}
         <div className="mt-6 mb-2">
           <div className="bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-800 rounded-md p-4 relative overflow-hidden shadow-md">
             <div className="absolute right-0 top-0 w-24 h-24 bg-amber-100 dark:bg-amber-900/20 opacity-50 rounded-full -mr-8 -mt-8"></div>

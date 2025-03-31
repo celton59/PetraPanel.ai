@@ -322,7 +322,7 @@ export function MediaCorrectionsDetail({
           />
         </motion.div>
 
-        {/* Información sobre enlaces de afiliación - Advertencia mejorada */}
+        {/* Advertencia sobre enlaces en videos */}
         <motion.div 
           className="mt-6 mb-2"
           initial={{ opacity: 0, y: 20 }}
