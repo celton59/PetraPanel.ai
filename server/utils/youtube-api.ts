@@ -138,6 +138,35 @@ export async function getAuthorizedChannel(accessToken: string): Promise<youtube
 }
 
 /**
+ * Obtiene información de un canal específico usando su ID
+ * @param channelId ID del canal de YouTube
+ * @returns Información del canal
+ */
+export async function getChannelById(channelId: string): Promise<youtube_v3.Schema$Channel | null> {
+  try {
+    // Usar una clave de API para acceder a información pública del canal sin autenticación
+    const youtube = google.youtube({
+      version: 'v3',
+      auth: process.env.YOUTUBE_API_KEY
+    });
+    
+    const response = await youtube.channels.list({
+      part: ['snippet', 'statistics'],
+      id: [channelId]
+    });
+    
+    if (!response.data.items || response.data.items.length === 0) {
+      return null;
+    }
+    
+    return response.data.items[0];
+  } catch (error) {
+    console.error('Error obteniendo información del canal por ID:', error);
+    throw error;
+  }
+}
+
+/**
  * Sube un video a YouTube
  * @param accessToken Token de acceso
  * @param videoPath Ruta al archivo de video

@@ -50,11 +50,10 @@ export default function YoutubeAdminPage() {
   const [_, params] = useRoute('/administracion/youtube');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
-  const [newChannelData, setNewChannelData] = useState({
-    name: '',
+  const [newChannelData, setNewChannelData] = useState<{
+    channelId: string;
+  }>({
     channelId: '',
-    url: '',
-    description: '',
   });
   const [linkData, setLinkData] = useState({
     channelId: '',
@@ -126,8 +125,8 @@ export default function YoutubeAdminPage() {
   };
 
   const handleCreateChannel = async () => {
-    if (!newChannelData.name || !newChannelData.channelId || !newChannelData.url) {
-      toast.error('Por favor, completa todos los campos obligatorios');
+    if (!newChannelData.channelId) {
+      toast.error('Por favor, ingresa el ID del canal');
       return;
     }
 
@@ -135,13 +134,9 @@ export default function YoutubeAdminPage() {
       await createChannel(newChannelData);
       setIsCreateDialogOpen(false);
       setNewChannelData({
-        name: '',
         channelId: '',
-        url: '',
-        description: '',
       });
       refetchChannels();
-      toast.success('Canal creado exitosamente');
     } catch (error) {
       console.error('Error al crear canal:', error);
       toast.error('Error al crear el canal');
@@ -469,19 +464,10 @@ export default function YoutubeAdminPage() {
           <DialogHeader>
             <DialogTitle>Agregar Nuevo Canal de YouTube</DialogTitle>
             <DialogDescription>
-              Ingresa los detalles del canal de YouTube que deseas registrar.
+              Ingresa el ID del canal de YouTube que deseas registrar. El sistema obtendrá automáticamente el resto de la información desde YouTube.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre del Canal</Label>
-              <Input
-                id="name"
-                placeholder="Canal de Marketing"
-                value={newChannelData.name}
-                onChange={(e) => setNewChannelData({ ...newChannelData, name: e.target.value })}
-              />
-            </div>
             <div className="space-y-2">
               <Label htmlFor="channelId">ID del Canal</Label>
               <Input
@@ -493,24 +479,6 @@ export default function YoutubeAdminPage() {
               <p className="text-xs text-muted-foreground mt-1">
                 El ID del canal se encuentra en la URL del canal: youtube.com/channel/[ID-DEL-CANAL]
               </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="url">URL del Canal</Label>
-              <Input
-                id="url"
-                placeholder="https://www.youtube.com/channel/UCaBcDeFgHi12345"
-                value={newChannelData.url}
-                onChange={(e) => setNewChannelData({ ...newChannelData, url: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Descripción (opcional)</Label>
-              <Input
-                id="description"
-                placeholder="Canal oficial de marketing de la empresa"
-                value={newChannelData.description}
-                onChange={(e) => setNewChannelData({ ...newChannelData, description: e.target.value })}
-              />
             </div>
           </div>
           <DialogFooter>

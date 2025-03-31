@@ -48,17 +48,25 @@ export function useYoutubeChannels() {
   const createChannelMutation = useMutation({
     mutationFn: async (channelData: {
       channelId: string;
-      name: string;
-      url: string;
+      name?: string;
+      url?: string;
       description?: string;
     }) => {
       await refreshCSRFToken();
       const response = await api.post('/api/youtube/channels', channelData);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/youtube/channels'] });
-      toast.success('Canal de YouTube creado correctamente');
+      if (data.warning) {
+        toast.success('Canal de YouTube creado correctamente', {
+          description: data.warning
+        });
+      } else {
+        toast.success('Canal de YouTube creado correctamente', {
+          description: 'La información del canal se ha obtenido automáticamente desde YouTube'
+        });
+      }
     },
     onError: (error: any) => {
       console.error('Error al crear canal:', error);

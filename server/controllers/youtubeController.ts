@@ -10,6 +10,7 @@ import {
   verifyAccessToken,
   refreshAccessToken,
   getAuthorizedChannel,
+  getChannelById,
   uploadVideo
 } from '../utils/youtube-api';
 
@@ -47,13 +48,13 @@ async function getYoutubeChannels(req: Request, res: Response): Promise<Response
  */
 async function createYoutubeChannel(req: Request, res: Response): Promise<Response> {
   try {
-    const { channelId, name, url, description } = req.body;
+    const { channelId } = req.body;
     
     // Validar datos requeridos
-    if (!channelId || !name || !url) {
+    if (!channelId) {
       return res.status(400).json({
         success: false,
-        message: 'El ID del canal, nombre y URL son obligatorios'
+        message: 'El ID del canal es obligatorio'
       });
     }
     
@@ -69,21 +70,67 @@ async function createYoutubeChannel(req: Request, res: Response): Promise<Respon
       });
     }
     
-    // Crear el nuevo canal
-    const [newChannel] = await db.insert(youtubeChannels).values({
-      channelId,
-      name,
-      url,
-      description,
-      videoCount: 0,
-      active: true
-    }).returning();
+    // Obtener datos del canal desde la API de YouTube
+    try {
+      const channelInfo = await getChannelById(channelId);
+      
+      if (!channelInfo) {
+        return res.status(404).json({
+          success: false,
+          message: 'No se encontró el canal en YouTube. Verifica el ID del canal.'
+        });
+      }
+      
+      // Extraer los datos del canal
+      const name = channelInfo.snippet?.title || 'Canal sin nombre';
+      const description = channelInfo.snippet?.description || '';
+      const url = `https://www.youtube.com/channel/${channelId}`;
+      const thumbnailUrl = channelInfo.snippet?.thumbnails?.default?.url || '';
+      const subscriberCount = channelInfo.statistics?.subscriberCount || '0';
+      const videoCount = parseInt(channelInfo.statistics?.videoCount || '0');
+      
+      // Crear el nuevo canal
+      const [newChannel] = await db.insert(youtubeChannels).values({
+        channelId,
+        name,
+        url,
+        description,
+        thumbnailUrl,
+        subscriberCount,
+        videoCount,
+        active: true
+      }).returning();
+      
+      return res.status(201).json({
+        success: true,
+        data: newChannel,
+        message: 'Canal creado correctamente con datos obtenidos de YouTube'
+      });
+      
+    } catch (apiError) {
+      console.error('Error al obtener datos del canal desde YouTube:', apiError);
+      
+      // Si falla la API, usar los datos proporcionados por el usuario
+      const { name = 'Canal sin nombre', url = `https://www.youtube.com/channel/${channelId}`, description = '' } = req.body;
+      
+      // Crear el canal con datos mínimos
+      const [newChannel] = await db.insert(youtubeChannels).values({
+        channelId,
+        name,
+        url,
+        description,
+        videoCount: 0,
+        active: true
+      }).returning();
+      
+      return res.status(201).json({
+        success: true,
+        data: newChannel,
+        message: 'Canal creado correctamente (sin datos de YouTube)',
+        warning: 'No se pudieron obtener datos completos desde YouTube. Se han utilizado datos básicos.'
+      });
+    }
     
-    return res.status(201).json({
-      success: true,
-      data: newChannel,
-      message: 'Canal creado correctamente'
-    });
   } catch (error) {
     console.error('Error al crear canal de YouTube:', error);
     return res.status(500).json({
