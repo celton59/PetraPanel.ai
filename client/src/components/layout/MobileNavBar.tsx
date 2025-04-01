@@ -1,4 +1,4 @@
-import { Bell, Home, Menu, Video, Languages, Leaf, Settings, Shield, Users, Info, MessageSquareHeart } from "lucide-react";
+import { Bell, Home, Menu, Video, Languages, Leaf, Settings, Shield, Users, Info, MessageSquareHeart, Search } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/use-user";
@@ -12,6 +12,7 @@ import { OnlineUsersIndicator } from "../users/OnlineUsersIndicator";
 import { useOnlineUsers } from "@/hooks/use-online-users";
 import { useSwipeable } from "react-swipeable";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useGlobalSearch } from "@/hooks/use-global-search";
 import { ArrowRightFromLine, ArrowLeftFromLine } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { VersionInfo } from "./VersionInfo";
@@ -25,6 +26,7 @@ export function MobileNavBar() {
   const { unreadCount } = useNotifications();
   const { onlineUsers } = useOnlineUsers();
   const isMobile = useIsMobile();
+  const { openSearch } = useGlobalSearch();
 
   const isAdmin = user?.role === 'admin';
   
@@ -214,6 +216,26 @@ export function MobileNavBar() {
                   <span className="text-[10px] -mt-0.5 text-muted-foreground/80">Video Studio</span>
                 </div>
               </div>
+            </div>
+            
+            {/* Botón de búsqueda */}
+            <div className="p-3 border-b">
+              <Button 
+                variant="outline" 
+                className="w-full justify-between text-sm gap-2 h-9"
+                onClick={() => {
+                  openSearch();
+                  setIsMenuOpen(false);
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <Search className="h-4 w-4 text-muted-foreground" />
+                  <span>Buscar en PetraPanel</span>
+                </div>
+                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </Button>
             </div>
             
             {/* Sección de usuarios en línea */}

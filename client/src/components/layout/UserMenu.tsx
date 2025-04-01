@@ -44,19 +44,8 @@ export function UserMenu({ className }: UserMenuProps) {
   return (
     <div className={`flex items-center px-4 h-16 ${className}`}>
       <div className="flex items-center space-x-2 sm:space-x-4 ml-auto">
-        {/* Mobile search button */}
-        <Button 
-          variant="default" 
-          size="sm" 
-          className="md:hidden h-9 px-3 rounded-md"
-          onClick={openSearch} // Usamos la función que ya fue extraída del hook al inicio del componente
-        >
-          <Search className="h-5 w-5 mr-1" />
-          <span className="text-sm font-medium">Buscar</span>
-        </Button>
-        
-        {/* Indicador de usuarios en línea - oculto en móvil */}
-        <div className="hidden md:block">
+        {/* Indicador de usuarios en línea - visible en móvil y escritorio */}
+        <div className="block">
           <OnlineUsersIndicator />
         </div>
         
