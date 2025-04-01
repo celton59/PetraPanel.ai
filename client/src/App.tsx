@@ -113,6 +113,12 @@ function Router() {
               return null;
             }}
           </Route>
+          <Route path="/administracion/notificaciones">
+            {() => {
+              window.location.href = "/admin/notifications";
+              return null;
+            }}
+          </Route>
           <Route path="/admin/activity">
             {() => {
               window.location.href = "/admin/stats/user-activity";

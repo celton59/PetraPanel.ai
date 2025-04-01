@@ -13,11 +13,11 @@ import {
   Trash2, 
   RotateCw, 
   User,
-  ArrowUpDown,
   AlertCircle
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { AdminLayout } from "@/components/layout/AdminLayout";
 
 interface NotificationItem {
   id: number;
@@ -195,311 +195,313 @@ export default function NotificationsAdminPage() {
   };
 
   return (
-    <div className="container max-w-6xl mx-auto p-4 space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="space-y-0.5">
-          <h2 className="text-2xl font-bold tracking-tight">Gestión de Notificaciones</h2>
-          <p className="text-muted-foreground">
-            Administra y envía notificaciones a los usuarios de la plataforma
-          </p>
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div className="space-y-0.5">
+            <h1 className="text-3xl font-bold tracking-tight">Gestión de Notificaciones</h1>
+            <p className="text-muted-foreground">
+              Administra y envía notificaciones a los usuarios de la plataforma
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={fetchNotifications}
+              className="gap-1"
+              disabled={loading}
+            >
+              <RotateCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              Actualizar
+            </Button>
+            <SendNotificationDialog />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={fetchNotifications}
-            className="gap-1"
-            disabled={loading}
-          >
-            <RotateCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Actualizar
-          </Button>
-          <SendNotificationDialog />
-        </div>
-      </div>
 
-      <Tabs defaultValue="all">
-        <TabsList>
-          <TabsTrigger value="all">Todas</TabsTrigger>
-          <TabsTrigger value="unread">No leídas</TabsTrigger>
-          <TabsTrigger value="archived">Archivadas</TabsTrigger>
-          <TabsTrigger value="system">Sistema</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="all" className="mt-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Todas las notificaciones</CardTitle>
-              <CardDescription>
-                Lista completa de notificaciones enviadas a los usuarios
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-4">
-                  {error && (
-                    <div className="p-4 text-red-600 bg-red-50 rounded-md">
-                      {error}
-                    </div>
-                  )}
-                  
-                  {loading ? (
-                    <div className="flex justify-center p-4">
-                      <RotateCw className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                  ) : notifications.length === 0 ? (
-                    <div className="text-center p-4 text-muted-foreground">
-                      No hay notificaciones disponibles
-                    </div>
-                  ) : (
-                    notifications.map(notification => (
-                      <div 
-                        key={notification.id} 
-                        className={`p-4 rounded-lg border ${notification.read ? '' : 'bg-muted/30'}`}
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="mt-1">
-                            {getTypeIcon(notification.type)}
-                          </div>
-                          <div className="flex-1 space-y-2">
-                            <div className="flex justify-between items-start">
-                              <h4 className="text-base font-semibold">{notification.title}</h4>
-                              <div className="flex items-center gap-2">
-                                {getTypeBadge(notification.type)}
-                                <button 
-                                  onClick={() => deleteNotification(notification.id)}
-                                  className="text-muted-foreground hover:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
+        <Tabs defaultValue="all">
+          <TabsList>
+            <TabsTrigger value="all">Todas</TabsTrigger>
+            <TabsTrigger value="unread">No leídas</TabsTrigger>
+            <TabsTrigger value="archived">Archivadas</TabsTrigger>
+            <TabsTrigger value="system">Sistema</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="all" className="mt-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Todas las notificaciones</CardTitle>
+                <CardDescription>
+                  Lista completa de notificaciones enviadas a los usuarios
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[500px] pr-4">
+                  <div className="space-y-4">
+                    {error && (
+                      <div className="p-4 text-red-600 bg-red-50 rounded-md">
+                        {error}
+                      </div>
+                    )}
+                    
+                    {loading ? (
+                      <div className="flex justify-center p-4">
+                        <RotateCw className="h-8 w-8 animate-spin text-primary" />
+                      </div>
+                    ) : notifications.length === 0 ? (
+                      <div className="text-center p-4 text-muted-foreground">
+                        No hay notificaciones disponibles
+                      </div>
+                    ) : (
+                      notifications.map(notification => (
+                        <div 
+                          key={notification.id} 
+                          className={`p-4 rounded-lg border ${notification.read ? '' : 'bg-muted/30'}`}
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="mt-1">
+                              {getTypeIcon(notification.type)}
+                            </div>
+                            <div className="flex-1 space-y-2">
+                              <div className="flex justify-between items-start">
+                                <h4 className="text-base font-semibold">{notification.title}</h4>
+                                <div className="flex items-center gap-2">
+                                  {getTypeBadge(notification.type)}
+                                  <button 
+                                    onClick={() => deleteNotification(notification.id)}
+                                    className="text-muted-foreground hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              </div>
+                              <p className="text-sm text-muted-foreground">{notification.message}</p>
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                                <div className="flex items-center gap-1">
+                                  <User className="h-3 w-3" />
+                                  <span>{notification.fullName || notification.username}</span>
+                                </div>
+                                <div>
+                                  {formatDate(notification.createdAt, true)}
+                                </div>
+                                {notification.read ? (
+                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                    Leída
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
+                                    No leída
+                                  </Badge>
+                                )}
+                                {notification.archived && (
+                                  <Badge variant="outline" className="text-xs">
+                                    Archivada
+                                  </Badge>
+                                )}
                               </div>
                             </div>
-                            <p className="text-sm text-muted-foreground">{notification.message}</p>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <User className="h-3 w-3" />
-                                <span>{notification.fullName || notification.username}</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="unread" className="mt-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Notificaciones no leídas</CardTitle>
+                <CardDescription>
+                  Notificaciones que aún no han sido marcadas como leídas
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[500px] pr-4">
+                  <div className="space-y-4">
+                    {notifications
+                      .filter(notification => !notification.read)
+                      .map(notification => (
+                        <div 
+                          key={notification.id} 
+                          className="p-4 rounded-lg border bg-muted/30"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="mt-1">
+                              {getTypeIcon(notification.type)}
+                            </div>
+                            <div className="flex-1 space-y-2">
+                              <div className="flex justify-between items-start">
+                                <h4 className="text-base font-semibold">{notification.title}</h4>
+                                <div className="flex items-center gap-2">
+                                  {getTypeBadge(notification.type)}
+                                  <button 
+                                    onClick={() => deleteNotification(notification.id)}
+                                    className="text-muted-foreground hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </div>
                               </div>
-                              <div>
-                                {formatDate(notification.createdAt, true)}
-                              </div>
-                              {notification.read ? (
-                                <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                                  Leída
-                                </Badge>
-                              ) : (
+                              <p className="text-sm text-muted-foreground">{notification.message}</p>
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                                <div className="flex items-center gap-1">
+                                  <User className="h-3 w-3" />
+                                  <span>{notification.fullName || notification.username}</span>
+                                </div>
+                                <div>
+                                  {formatDate(notification.createdAt, true)}
+                                </div>
                                 <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
                                   No leída
                                 </Badge>
-                              )}
-                              {notification.archived && (
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    ))}
+                    {notifications.filter(notification => !notification.read).length === 0 && (
+                      <div className="text-center p-4 text-muted-foreground">
+                        No hay notificaciones sin leer
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="archived" className="mt-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Notificaciones archivadas</CardTitle>
+                <CardDescription>
+                  Notificaciones que han sido archivadas por los usuarios
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[500px] pr-4">
+                  <div className="space-y-4">
+                    {notifications
+                      .filter(notification => notification.archived)
+                      .map(notification => (
+                        <div 
+                          key={notification.id} 
+                          className="p-4 rounded-lg border"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="mt-1">
+                              {getTypeIcon(notification.type)}
+                            </div>
+                            <div className="flex-1 space-y-2">
+                              <div className="flex justify-between items-start">
+                                <h4 className="text-base font-semibold">{notification.title}</h4>
+                                <div className="flex items-center gap-2">
+                                  {getTypeBadge(notification.type)}
+                                  <button 
+                                    onClick={() => deleteNotification(notification.id)}
+                                    className="text-muted-foreground hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              </div>
+                              <p className="text-sm text-muted-foreground">{notification.message}</p>
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                                <div className="flex items-center gap-1">
+                                  <User className="h-3 w-3" />
+                                  <span>{notification.fullName || notification.username}</span>
+                                </div>
+                                <div>
+                                  {formatDate(notification.createdAt, true)}
+                                </div>
                                 <Badge variant="outline" className="text-xs">
                                   Archivada
                                 </Badge>
-                              )}
+                              </div>
                             </div>
                           </div>
                         </div>
+                    ))}
+                    {notifications.filter(notification => notification.archived).length === 0 && (
+                      <div className="text-center p-4 text-muted-foreground">
+                        No hay notificaciones archivadas
                       </div>
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="unread" className="mt-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Notificaciones no leídas</CardTitle>
-              <CardDescription>
-                Notificaciones que aún no han sido marcadas como leídas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-4">
-                  {notifications
-                    .filter(notification => !notification.read)
-                    .map(notification => (
-                      <div 
-                        key={notification.id} 
-                        className="p-4 rounded-lg border bg-muted/30"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="mt-1">
-                            {getTypeIcon(notification.type)}
-                          </div>
-                          <div className="flex-1 space-y-2">
-                            <div className="flex justify-between items-start">
-                              <h4 className="text-base font-semibold">{notification.title}</h4>
-                              <div className="flex items-center gap-2">
-                                {getTypeBadge(notification.type)}
-                                <button 
-                                  onClick={() => deleteNotification(notification.id)}
-                                  className="text-muted-foreground hover:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="system" className="mt-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Notificaciones del sistema</CardTitle>
+                <CardDescription>
+                  Notificaciones importantes generadas por el sistema
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[500px] pr-4">
+                  <div className="space-y-4">
+                    {notifications
+                      .filter(notification => notification.type === 'system')
+                      .map(notification => (
+                        <div 
+                          key={notification.id} 
+                          className={`p-4 rounded-lg border ${notification.read ? '' : 'bg-muted/30'}`}
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="mt-1">
+                              <BellRing className="h-4 w-4 text-purple-500" />
                             </div>
-                            <p className="text-sm text-muted-foreground">{notification.message}</p>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <User className="h-3 w-3" />
-                                <span>{notification.fullName || notification.username}</span>
+                            <div className="flex-1 space-y-2">
+                              <div className="flex justify-between items-start">
+                                <h4 className="text-base font-semibold">{notification.title}</h4>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300">Sistema</Badge>
+                                  <button 
+                                    onClick={() => deleteNotification(notification.id)}
+                                    className="text-muted-foreground hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </div>
                               </div>
-                              <div>
-                                {formatDate(notification.createdAt, true)}
+                              <p className="text-sm text-muted-foreground">{notification.message}</p>
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                                <div>
+                                  {formatDate(notification.createdAt, true)}
+                                </div>
+                                {notification.read ? (
+                                  <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                    Leída
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
+                                    No leída
+                                  </Badge>
+                                )}
                               </div>
-                              <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
-                                No leída
-                              </Badge>
                             </div>
                           </div>
                         </div>
+                    ))}
+                    {notifications.filter(notification => notification.type === 'system').length === 0 && (
+                      <div className="text-center p-4 text-muted-foreground">
+                        No hay notificaciones del sistema
                       </div>
-                  ))}
-                  {notifications.filter(notification => !notification.read).length === 0 && (
-                    <div className="text-center p-4 text-muted-foreground">
-                      No hay notificaciones sin leer
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="archived" className="mt-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Notificaciones archivadas</CardTitle>
-              <CardDescription>
-                Notificaciones que han sido archivadas por los usuarios
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-4">
-                  {notifications
-                    .filter(notification => notification.archived)
-                    .map(notification => (
-                      <div 
-                        key={notification.id} 
-                        className="p-4 rounded-lg border"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="mt-1">
-                            {getTypeIcon(notification.type)}
-                          </div>
-                          <div className="flex-1 space-y-2">
-                            <div className="flex justify-between items-start">
-                              <h4 className="text-base font-semibold">{notification.title}</h4>
-                              <div className="flex items-center gap-2">
-                                {getTypeBadge(notification.type)}
-                                <button 
-                                  onClick={() => deleteNotification(notification.id)}
-                                  className="text-muted-foreground hover:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </div>
-                            </div>
-                            <p className="text-sm text-muted-foreground">{notification.message}</p>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <User className="h-3 w-3" />
-                                <span>{notification.fullName || notification.username}</span>
-                              </div>
-                              <div>
-                                {formatDate(notification.createdAt, true)}
-                              </div>
-                              <Badge variant="outline" className="text-xs">
-                                Archivada
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                  ))}
-                  {notifications.filter(notification => notification.archived).length === 0 && (
-                    <div className="text-center p-4 text-muted-foreground">
-                      No hay notificaciones archivadas
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="system" className="mt-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Notificaciones del sistema</CardTitle>
-              <CardDescription>
-                Notificaciones importantes generadas por el sistema
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-4">
-                  {notifications
-                    .filter(notification => notification.type === 'system')
-                    .map(notification => (
-                      <div 
-                        key={notification.id} 
-                        className={`p-4 rounded-lg border ${notification.read ? '' : 'bg-muted/30'}`}
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="mt-1">
-                            <BellRing className="h-4 w-4 text-purple-500" />
-                          </div>
-                          <div className="flex-1 space-y-2">
-                            <div className="flex justify-between items-start">
-                              <h4 className="text-base font-semibold">{notification.title}</h4>
-                              <div className="flex items-center gap-2">
-                                <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300">Sistema</Badge>
-                                <button 
-                                  onClick={() => deleteNotification(notification.id)}
-                                  className="text-muted-foreground hover:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </div>
-                            </div>
-                            <p className="text-sm text-muted-foreground">{notification.message}</p>
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                              <div>
-                                {formatDate(notification.createdAt, true)}
-                              </div>
-                              {notification.read ? (
-                                <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                                  Leída
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
-                                  No leída
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                  ))}
-                  {notifications.filter(notification => notification.type === 'system').length === 0 && (
-                    <div className="text-center p-4 text-muted-foreground">
-                      No hay notificaciones del sistema
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </AdminLayout>
   );
 }
