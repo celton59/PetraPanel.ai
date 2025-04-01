@@ -9,7 +9,7 @@ import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, FileDown, Users } from "lucide-react";
+import { Activity, BarChart, FileDown, Users } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
 import { MoneyIcon, TasksIcon, PendingIcon } from "@/components/CustomIcons";
 
@@ -89,11 +89,17 @@ export default function AdminStatsPage() {
         </div>
         
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="w-full max-w-md grid grid-cols-4">
+          <TabsList className="w-full max-w-md grid grid-cols-5">
             <TabsTrigger value="overview">General</TabsTrigger>
             <TabsTrigger value="performance">Rendimiento</TabsTrigger>
             <TabsTrigger value="videos">Videos</TabsTrigger>
             <TabsTrigger value="users">Usuarios</TabsTrigger>
+            <TabsTrigger value="activity" asChild>
+              <a href="/admin/stats/user-activity" className="flex items-center">
+                <Activity className="h-4 w-4 mr-2" />
+                Actividad
+              </a>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview" className="py-4">
