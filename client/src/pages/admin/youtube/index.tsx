@@ -7,6 +7,7 @@ import { CardDescription } from '@/components/ui/card';
 import { CardFooter } from '@/components/ui/card';
 import { CardHeader } from '@/components/ui/card';
 import { CardTitle } from '@/components/ui/card';
+import { AdminLayout } from '@/components/layout/AdminLayout';
 import { Tabs } from '@/components/ui/tabs';
 import { TabsContent } from '@/components/ui/tabs';
 import { TabsList } from '@/components/ui/tabs';
@@ -47,7 +48,7 @@ type ProjectChannel = {
 };
 
 export default function YoutubeAdminPage() {
-  const [_, params] = useRoute('/administracion/youtube');
+  const [_, params] = useRoute('/admin/youtube');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [newChannelData, setNewChannelData] = useState<{
@@ -227,49 +228,50 @@ export default function YoutubeAdminPage() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Administración de Canales de YouTube</h1>
-          <p className="text-muted-foreground mt-1">
-            Gestiona los canales de YouTube y su vinculación con proyectos
-          </p>
-        </div>
-        <div className="flex space-x-2">
-          <Button
-            variant="outline"
-            onClick={() => refetchChannels()}
-            disabled={isLoadingChannels}
-          >
-            {isLoadingChannels ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            Actualizar
-          </Button>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Canal
-          </Button>
-          <Button onClick={() => setIsLinkDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Vincular a Proyecto
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Canales de YouTube</CardTitle>
-              <CardDescription>
-                Selecciona un canal para ver detalles y administrarlo
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Administración de Canales de YouTube</h1>
+            <p className="text-muted-foreground mt-1">
+              Gestiona los canales de YouTube y su vinculación con proyectos
+            </p>
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => refetchChannels()}
+              disabled={isLoadingChannels}
+            >
               {isLoadingChannels ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              Actualizar
+            </Button>
+            <Button onClick={() => setIsCreateDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Canal
+            </Button>
+            <Button onClick={() => setIsLinkDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Vincular a Proyecto
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-1">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle>Canales de YouTube</CardTitle>
+                <CardDescription>
+                  Selecciona un canal para ver detalles y administrarlo
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingChannels ? (
                 <div className="flex justify-center items-center h-40">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 </div>
@@ -614,6 +616,7 @@ export default function YoutubeAdminPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
