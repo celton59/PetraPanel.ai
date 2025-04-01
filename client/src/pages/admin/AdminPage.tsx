@@ -142,11 +142,15 @@ export default function AdminPage() {
               </Card>
             </div>
             
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {/* Sección: Estadísticas */}
+              <div className="xl:col-span-4 mt-2 mb-0">
+                <h2 className="text-lg font-semibold mb-2">Estadísticas y Análisis</h2>
+              </div>
               <Link href="/admin/stats">
                 <ActionCard
                   icon={BarChart2}
-                  title="Estadísticas Avanzadas"
+                  title="Estadísticas Generales"
                   description="Accede a información detallada sobre el rendimiento del sistema, usuarios y videos."
                   iconColor="text-blue-500"
                   iconBgColor="bg-blue-50 dark:bg-blue-900/20"
@@ -170,6 +174,11 @@ export default function AdminPage() {
                   iconBgColor="bg-green-50 dark:bg-green-900/20"
                 />
               </Link>
+              
+              {/* Sección: Gestión y Contenido */}
+              <div className="xl:col-span-4 mt-8 mb-0">
+                <h2 className="text-lg font-semibold mb-2">Gestión y Contenido</h2>
+              </div>
               <Link href="/admin/youtube">
                 <ActionCard
                   icon={Youtube}
@@ -179,15 +188,6 @@ export default function AdminPage() {
                   iconBgColor="bg-red-50 dark:bg-red-900/20"
                 />
               </Link>
-              <Link href="/admin/notifications">
-                <ActionCard
-                  icon={Bell}
-                  title="Notificaciones"
-                  description="Gestiona y envía notificaciones a usuarios y grupos del sistema."
-                  iconColor="text-amber-500"
-                  iconBgColor="bg-amber-50 dark:bg-amber-900/20"
-                />
-              </Link>
               <Link href="/admin/afiliados">
                 <ActionCard
                   icon={LinkIcon}
@@ -195,6 +195,20 @@ export default function AdminPage() {
                   description="Gestiona las empresas afiliadas y sus enlaces para videos."
                   iconColor="text-indigo-500"
                   iconBgColor="bg-indigo-50 dark:bg-indigo-900/20"
+                />
+              </Link>
+              
+              {/* Sección: Sistema */}
+              <div className="xl:col-span-4 mt-8 mb-0">
+                <h2 className="text-lg font-semibold mb-2">Sistema y Configuración</h2>
+              </div>
+              <Link href="/admin/notifications">
+                <ActionCard
+                  icon={Bell}
+                  title="Notificaciones"
+                  description="Gestiona y envía notificaciones a usuarios y grupos del sistema."
+                  iconColor="text-amber-500"
+                  iconBgColor="bg-amber-50 dark:bg-amber-900/20"
                 />
               </Link>
               <Link href="/sugerencias">

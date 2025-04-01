@@ -11,7 +11,9 @@ const adminSections = [
   { id: 'overview', label: 'Visión General', path: '/admin' },
   { id: 'stats', label: 'Estadísticas', path: '/admin/stats' },
   { id: 'accounting', label: 'Contabilidad', path: '/admin/accounting' },
-  { id: 'activity', label: 'Actividad', path: '/admin/activity' }, // Nueva sección
+  { id: 'youtube', label: 'YouTube', path: '/admin/youtube' },
+  { id: 'afiliados', label: 'Afiliados', path: '/admin/afiliados' },
+  { id: 'notifications', label: 'Notificaciones', path: '/admin/notifications' },
   { id: 'configuration', label: 'Configuración', path: '/admin/configuration' },
 ];
 

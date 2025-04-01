@@ -98,7 +98,10 @@ export default function AdminStatsPage() {
             <TabsTrigger value="users">Usuarios</TabsTrigger>
             <TabsTrigger 
               value="activity" 
-              onClick={() => setLocation("/admin/stats/user-activity")}
+              onClick={(e) => {
+                e.preventDefault();
+                setLocation("/admin/stats/user-activity");
+              }}
               className="flex items-center"
             >
               <Activity className="h-4 w-4 mr-2" />

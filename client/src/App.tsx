@@ -86,16 +86,33 @@ function Router() {
       {/* Rutas de administración - solo accesibles para administradores */}
       { user.role === 'admin' && (
         <>
+          {/* Rutas principales */}
           <Route path="/admin" component={() => <ProtectedRoute component={AdminPage} />} />
-          <Route path="/admin/stats" component={() => <ProtectedRoute component={AdminStatsPage} />} />
-          <Route path="/admin/accounting" component={() => <ProtectedRoute component={AccountingPage} />} />
-          <Route path="/admin/activity" component={() => <ProtectedRoute component={ActivityPage} />} />
           <Route path="/admin/configuration" component={() => <ProtectedRoute component={ConfigurationPage} />} />
           <Route path="/admin/notifications" component={() => <ProtectedRoute component={NotificationsAdminPage} />} />
           <Route path="/admin/afiliados" component={() => <ProtectedRoute component={ConfiguracionAfiliados} />} />
           <Route path="/admin/youtube" component={() => <ProtectedRoute component={YoutubeAdminPage} />} />
+          
+          {/* Rutas de estadísticas */}
+          <Route path="/admin/stats" component={() => <ProtectedRoute component={AdminStatsPage} />} />
           <Route path="/admin/stats/user-activity" component={() => <ProtectedRoute component={UserActivityStatsPage} />} />
-          <Route path="/administracion/youtube" component={() => <ProtectedRoute component={YoutubeAdminPage} />} />
+          
+          {/* Contabilidad */}
+          <Route path="/admin/accounting" component={() => <ProtectedRoute component={AccountingPage} />} />
+          
+          {/* Redireccionamiento de rutas antiguas */}
+          <Route path="/administracion/youtube">
+            {() => {
+              window.location.href = "/admin/youtube";
+              return null;
+            }}
+          </Route>
+          <Route path="/admin/activity">
+            {() => {
+              window.location.href = "/admin/stats/user-activity";
+              return null;
+            }}
+          </Route>
         </>
       )}
       

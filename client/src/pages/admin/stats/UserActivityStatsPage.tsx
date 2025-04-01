@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AdminLayout } from '@/components/layout/AdminLayout';
 import { useUserActivityStats } from '@/hooks/useUserActivityStats';
+import { useLocation } from 'wouter';
 import { format, parseISO, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { 
@@ -60,6 +61,7 @@ import {
 import { 
   Calendar, 
   ChevronDown, 
+  ChevronLeft,
   ChevronUp, 
   ClipboardList, 
   Clock, 
@@ -635,7 +637,7 @@ const SummaryCharts: React.FC<{
                   nameKey="name"
                   label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
                 >
-                  {actionChartData.map((entry, index) => (
+                  {actionChartData.map((entry: any, index: number) => (
                     <Cell 
                       key={`cell-${index}`} 
                       fill={CHART_COLORS[index % CHART_COLORS.length]} 
@@ -676,7 +678,7 @@ const SummaryCharts: React.FC<{
                 <Tooltip />
                 <Legend />
                 <Bar dataKey="value" name="Acciones" fill="#2563eb">
-                  {userChartData.map((entry, index) => (
+                  {userChartData.map((entry: any, index: number) => (
                     <Cell 
                       key={`cell-${index}`} 
                       fill={CHART_COLORS[index % CHART_COLORS.length]} 
@@ -777,6 +779,7 @@ const UserSessions: React.FC<{
 };
 
 export default function UserActivityStatsPage() {
+  const [_, setLocation] = useLocation();
   const { 
     data, 
     users, 
@@ -797,6 +800,19 @@ export default function UserActivityStatsPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="gap-1"
+              onClick={() => {
+                setLocation("/admin/stats");
+              }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Volver a Estadísticas
+            </Button>
+          </div>
           <h1 className="text-3xl font-bold">Estadísticas de Actividad de Usuarios</h1>
           <p className="text-muted-foreground mt-1">
             Analiza y filtra la actividad de los usuarios por fechas, acciones y más
