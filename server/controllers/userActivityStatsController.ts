@@ -35,20 +35,16 @@ async function getUserActivityStats(req: Request, res: Response): Promise<Respon
         userName: users.username,
         userFullName: users.fullName,
         actionType: userActions.actionType,
-        actionDetail: userActions.actionDetail,
-        entityId: userActions.entityId, 
-        entityType: userActions.entityType,
+        videoId: userActions.videoId,
+        projectId: userActions.projectId,
         entityName: sql<string>`
           CASE 
-            WHEN ${userActions.entityType} = 'video' THEN (SELECT title FROM videos WHERE id = ${userActions.entityId})
-            WHEN ${userActions.entityType} = 'project' THEN (SELECT name FROM projects WHERE id = ${userActions.entityId})
-            WHEN ${userActions.entityType} = 'user' THEN (SELECT full_name FROM users WHERE id = ${userActions.entityId})
-            ELSE ${userActions.entityType}
+            WHEN ${userActions.videoId} IS NOT NULL THEN (SELECT title FROM videos WHERE id = ${userActions.videoId})
+            WHEN ${userActions.projectId} IS NOT NULL THEN (SELECT name FROM projects WHERE id = ${userActions.projectId})
+            ELSE 'Sin entidad'
           END
         `,
-        createdAt: userActions.createdAt,
-        ipAddress: userActions.ipAddress,
-        userAgent: userActions.userAgent
+        createdAt: userActions.createdAt
       })
       .from(userActions)
       .leftJoin(users, eq(userActions.userId, users.id));
@@ -139,15 +135,15 @@ async function getUserActivityStats(req: Request, res: Response): Promise<Respon
         .select({
           id: userSessions.id,
           userId: userSessions.userId,
-          startTime: userSessions.startTime,
-          endTime: userSessions.endTime,
-          duration: sql<number>`EXTRACT(EPOCH FROM (${userSessions.endTime} - ${userSessions.startTime}))::integer`,
+          startTime: userSessions.startedAt,
+          endTime: userSessions.endedAt,
+          duration: sql<number>`EXTRACT(EPOCH FROM (${userSessions.endedAt} - ${userSessions.startedAt}))::integer`,
           ipAddress: userSessions.ipAddress,
           userAgent: userSessions.userAgent
         })
         .from(userSessions)
         .where(eq(userSessions.userId, Number(userId)))
-        .orderBy(desc(userSessions.startTime))
+        .orderBy(desc(userSessions.startedAt))
         .limit(20)
         .execute();
     }
