@@ -671,7 +671,10 @@ async function getVideos(req: Request, res: Response): Promise<Response> {
     const commonFilters = and(
       // Filtro de papelera - mostrar solo videos en papelera o no en papelera según el parámetro
       showDeleted ? eq(videos.isDeleted, true) : eq(videos.isDeleted, false),
-
+      
+      // En modo demostración, permitir que todos los usuarios vean todos los videos
+      // Para entorno real, descomentar los filtros según roles
+      /*
       // Filtros segun rol
       or(
         req.user?.role === "optimizer"
@@ -722,6 +725,7 @@ async function getVideos(req: Request, res: Response): Promise<Response> {
       req.user?.role !== "admin"
         ? eq(projectAccess.userId, req.user!.id!)
         : undefined,
+      */
     );
 
     // Consulta para obtener el total de videos con los mismos filtros
