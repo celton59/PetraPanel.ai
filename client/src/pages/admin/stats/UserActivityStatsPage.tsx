@@ -489,10 +489,13 @@ const ActivityTable: React.FC<{
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => onPageChange(Math.max(0, currentPage - 1))} 
-                    disabled={currentPage === 0}
-                  />
+                  {currentPage === 0 ? (
+                    <PaginationPrevious className="pointer-events-none opacity-50" />
+                  ) : (
+                    <PaginationPrevious 
+                      onClick={() => onPageChange(Math.max(0, currentPage - 1))}
+                    />
+                  )}
                 </PaginationItem>
                 
                 {[...Array(Math.min(5, totalPages))].map((_, i) => {
@@ -534,10 +537,13 @@ const ActivityTable: React.FC<{
                 )}
                 
                 <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => onPageChange(Math.min(totalPages - 1, currentPage + 1))} 
-                    disabled={currentPage === totalPages - 1}
-                  />
+                  {currentPage === totalPages - 1 ? (
+                    <PaginationNext className="pointer-events-none opacity-50" />
+                  ) : (
+                    <PaginationNext 
+                      onClick={() => onPageChange(Math.min(totalPages - 1, currentPage + 1))}
+                    />
+                  )}
                 </PaginationItem>
               </PaginationContent>
             </Pagination>

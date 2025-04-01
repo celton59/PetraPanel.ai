@@ -10,12 +10,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Activity, BarChart, FileDown, Users } from "lucide-react";
+import { useLocation } from "wouter";
 import StatsCard from "@/components/StatsCard";
 import { MoneyIcon, TasksIcon, PendingIcon } from "@/components/CustomIcons";
 
 export default function AdminStatsPage() {
   const [timeRange, setTimeRange] = useState("month");
   const [exportFormat, setExportFormat] = useState("pdf");
+  const [, setLocation] = useLocation();
 
   return (
     <AdminLayout>
@@ -94,11 +96,13 @@ export default function AdminStatsPage() {
             <TabsTrigger value="performance">Rendimiento</TabsTrigger>
             <TabsTrigger value="videos">Videos</TabsTrigger>
             <TabsTrigger value="users">Usuarios</TabsTrigger>
-            <TabsTrigger value="activity" asChild>
-              <a href="/admin/stats/user-activity" className="flex items-center">
-                <Activity className="h-4 w-4 mr-2" />
-                Actividad
-              </a>
+            <TabsTrigger 
+              value="activity" 
+              onClick={() => setLocation("/admin/stats/user-activity")}
+              className="flex items-center"
+            >
+              <Activity className="h-4 w-4 mr-2" />
+              Actividad
             </TabsTrigger>
           </TabsList>
           
