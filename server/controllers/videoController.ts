@@ -668,65 +668,9 @@ async function getVideos(req: Request, res: Response): Promise<Response> {
     const showDeleted = req.query.trash === 'true';
 
     // Preparamos los filtros comunes tanto para el count como para la consulta principal
-    const commonFilters = and(
-      // Filtro de papelera - mostrar solo videos en papelera o no en papelera según el parámetro
-      showDeleted ? eq(videos.isDeleted, true) : eq(videos.isDeleted, false),
-      
-      // En modo demostración, permitir que todos los usuarios vean todos los videos
-      // Para entorno real, descomentar los filtros según roles
-      /*
-      // Filtros segun rol
-      or(
-        req.user?.role === "optimizer"
-          ? eq(videos.status, "available")
-          : undefined,
-        req.user?.role === "optimizer"
-          ? eq(videos.status, "content_corrections")
-          : undefined,
-        req.user?.role === "optimizer"
-          ? eq(videos.optimizedBy, req.user!.id!)
-          : undefined,
-        req.user?.role === "optimizer"
-          ? isNull(videos.optimizedBy)
-          : undefined,
-        req.user?.role === "reviewer" || req.user?.role === "content_reviewer"
-          ? eq(videos.status, "content_review")
-          : undefined,
-        req.user?.role === "reviewer" || req.user?.role === "content_reviewer"
-          ? eq(videos.contentReviewedBy, req.user!.id!)
-          : undefined,
-        req.user?.role === "reviewer" || req.user?.role === "content_reviewer"
-          ? isNull(videos.contentReviewedBy)
-          : undefined,
-        req.user?.role === "youtuber"
-          ? eq(videos.status, "upload_media")
-          : undefined,
-        req.user?.role === "youtuber"
-          ? eq(videos.status, "media_corrections")
-          : undefined,
-        req.user?.role === "youtuber"
-          ? eq(videos.contentUploadedBy, req.user!.id!)
-          : undefined,
-        req.user?.role === "youtuber"
-          ? isNull(videos.contentUploadedBy)
-          : undefined,
-        req.user?.role === "reviewer" || req.user?.role === "media_reviewer"
-          ? eq(videos.status, "media_review")
-          : undefined,
-        req.user?.role === "reviewer" || req.user?.role === "media_reviewer"
-          ? eq(videos.mediaReviewedBy, req.user!.id!)
-          : undefined,
-        req.user?.role === "reviewer" || req.user?.role === "media_reviewer"
-          ? isNull(videos.mediaReviewedBy)
-          : undefined,
-      ),
-
-      // Acceso a proyectos (para usuarios no administradores)
-      req.user?.role !== "admin"
-        ? eq(projectAccess.userId, req.user!.id!)
-        : undefined,
-      */
-    );
+    // NOTA: En modo de demostración, mostrar todos los videos a todos los usuarios
+    // Simplificamos los filtros al mínimo para el propósito de la demostración
+    const commonFilters = showDeleted ? eq(videos.isDeleted, true) : eq(videos.isDeleted, false);
 
     // Consulta para obtener el total de videos con los mismos filtros
     const countQuery = db.select({
