@@ -30,7 +30,7 @@ import AdminStatsPage from "@/pages/admin/stats/StatsPage";
 import AccountingPage from "@/pages/admin/accounting/AccountingPage";
 import ConfigurationPage from "@/pages/admin/configuration/ConfigurationPage";
 import NotificationsAdminPage from "@/pages/admin/notifications/NotificationsAdminPage";
-import ConfiguracionAfiliados from "@/pages/administracion/ConfiguracionAfiliados";
+import AffiliatesPage from "@/pages/admin/affiliates";
 import ActivityPage from "@/pages/admin/activity/ActivityPage";
 import SuggestionsPage from "@/pages/suggestions/SuggestionsPage";
 import YoutubeAdminPage from "@/pages/admin/youtube";
@@ -90,7 +90,7 @@ function Router() {
           <Route path="/admin" component={() => <ProtectedRoute component={AdminPage} />} />
           <Route path="/admin/configuration" component={() => <ProtectedRoute component={ConfigurationPage} />} />
           <Route path="/admin/notifications" component={() => <ProtectedRoute component={NotificationsAdminPage} />} />
-          <Route path="/admin/afiliados" component={() => <ProtectedRoute component={ConfiguracionAfiliados} />} />
+          <Route path="/admin/afiliados" component={() => <ProtectedRoute component={AffiliatesPage} />} />
           <Route path="/admin/youtube" component={() => <ProtectedRoute component={YoutubeAdminPage} />} />
           
           {/* Rutas de estadísticas */}
@@ -104,6 +104,12 @@ function Router() {
           <Route path="/administracion/youtube">
             {() => {
               window.location.href = "/admin/youtube";
+              return null;
+            }}
+          </Route>
+          <Route path="/administracion/afiliados">
+            {() => {
+              window.location.href = "/admin/afiliados";
               return null;
             }}
           </Route>

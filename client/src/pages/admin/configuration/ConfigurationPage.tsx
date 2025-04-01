@@ -10,7 +10,7 @@ import { RatesTab } from "../accounting/RatesTab";
 import { FinanceConfigTab } from "../accounting/FinanceConfigTab";
 import TitulinTab from "./tabs/titulin/TitulinTab";
 import { EasterEggsTab } from "./tabs/easter-eggs/EasterEggsTab";
-import ConfiguracionAfiliados from "@/pages/administracion/ConfiguracionAfiliados";
+import AffiliatesPage from "@/pages/admin/affiliates";
 import YoutubeAdminPage from "@/pages/admin/youtube";
 
 /**
@@ -86,7 +86,7 @@ export default function ConfigurationPage() {
           </TabsContent>
           
           <TabsContent value="afiliados" className="space-y-4">
-            <ConfiguracionAfiliados />
+            <AffiliatesPage />
           </TabsContent>
           
           <TabsContent value="youtube" className="space-y-4">
