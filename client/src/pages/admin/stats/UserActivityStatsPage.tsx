@@ -251,14 +251,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           <div className="space-y-2">
             <label htmlFor="userFilter" className="text-sm font-medium">Usuario</label>
             <Select
-              value={currentFilters.userId?.toString() || ""}
-              onValueChange={(value) => updateFilters({ userId: value ? parseInt(value) : null })}
+              value={currentFilters.userId?.toString() || "all"}
+              onValueChange={(value) => updateFilters({ userId: value === "all" ? null : parseInt(value) })}
             >
               <SelectTrigger id="userFilter">
                 <SelectValue placeholder="Todos los usuarios" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los usuarios</SelectItem>
+                <SelectItem value="all">Todos los usuarios</SelectItem>
                 {users.map(user => (
                   <SelectItem key={user.id} value={user.id.toString()}>
                     {user.fullName || user.username}
@@ -271,14 +271,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           <div className="space-y-2">
             <label htmlFor="actionFilter" className="text-sm font-medium">Tipo de Acción</label>
             <Select
-              value={currentFilters.actionType || ""}
-              onValueChange={(value) => updateFilters({ actionType: value || null })}
+              value={currentFilters.actionType || "all"}
+              onValueChange={(value) => updateFilters({ actionType: value === "all" ? null : value })}
             >
               <SelectTrigger id="actionFilter">
                 <SelectValue placeholder="Todas las acciones" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las acciones</SelectItem>
+                <SelectItem value="all">Todas las acciones</SelectItem>
                 {actionTypes.map(actionType => (
                   <SelectItem key={actionType.actionType} value={actionType.actionType}>
                     {getActionName(actionType.actionType)} ({actionType.count})
