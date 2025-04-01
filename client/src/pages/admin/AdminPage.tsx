@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PaymentIcon, MoneyIcon, TasksIcon, PendingIcon } from "@/components/CustomIcons";
 import StatsCard from "@/components/StatsCard";
-import { ArrowRight, BarChart, Settings, Users, FileText, BarChart2, Server, User, DatabaseIcon, Bell, Link as LinkIcon, MessageSquareHeart, Youtube } from "lucide-react";
+import { ArrowRight, BarChart, Settings, Users, FileText, BarChart2, Server, User, DatabaseIcon, Bell, Link as LinkIcon, MessageSquareHeart, Youtube, Activity } from "lucide-react";
 import ActionCard from '@/components/ActionCard';
 import { RolesTab } from './configuration/tabs/roles/RolesTab';
 import { UsersTab } from './configuration/tabs/users/UsersTab';
@@ -150,6 +150,15 @@ export default function AdminPage() {
                   description="Accede a información detallada sobre el rendimiento del sistema, usuarios y videos."
                   iconColor="text-blue-500"
                   iconBgColor="bg-blue-50 dark:bg-blue-900/20"
+                />
+              </Link>
+              <Link href="/admin/stats/user-activity">
+                <ActionCard
+                  icon={Activity}
+                  title="Actividad de Usuarios"
+                  description="Consulta y filtra las acciones realizadas por los usuarios con estadísticas detalladas."
+                  iconColor="text-cyan-500"
+                  iconBgColor="bg-cyan-50 dark:bg-cyan-900/20"
                 />
               </Link>
               <Link href="/admin/accounting">

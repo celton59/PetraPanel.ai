@@ -34,6 +34,7 @@ import ConfiguracionAfiliados from "@/pages/administracion/ConfiguracionAfiliado
 import ActivityPage from "@/pages/admin/activity/ActivityPage";
 import SuggestionsPage from "@/pages/suggestions/SuggestionsPage";
 import YoutubeAdminPage from "@/pages/admin/youtube";
+import UserActivityStatsPage from "@/pages/admin/stats/UserActivityStatsPage";
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   return (
@@ -93,6 +94,7 @@ function Router() {
           <Route path="/admin/notifications" component={() => <ProtectedRoute component={NotificationsAdminPage} />} />
           <Route path="/admin/afiliados" component={() => <ProtectedRoute component={ConfiguracionAfiliados} />} />
           <Route path="/admin/youtube" component={() => <ProtectedRoute component={YoutubeAdminPage} />} />
+          <Route path="/admin/stats/user-activity" component={() => <ProtectedRoute component={UserActivityStatsPage} />} />
           <Route path="/administracion/youtube" component={() => <ProtectedRoute component={YoutubeAdminPage} />} />
         </>
       )}

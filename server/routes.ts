@@ -26,6 +26,7 @@ import { setUpAccountingRoutes } from "./controllers/accountingController.js";
 import { setUpActivityRoutes } from "./controllers/activityController";
 import { setupYoutubeRoutes } from "./controllers/youtubeController";
 import { setupAdStatsRoutes } from "./controllers/adStatsController";
+import { setupUserActivityStatsRoutes } from "./controllers/userActivityStatsController";
 import { setupStatsRoutes } from "./controllers/statsController";
 
 export function registerRoutes(app: Express): Server {
@@ -352,6 +353,9 @@ export function registerRoutes(app: Express): Server {
     
     // Estadísticas de anuncios
     setupAdStatsRoutes(requireAuth, app);
+    
+    // Estadísticas de actividad de usuarios
+    setupUserActivityStatsRoutes(requireAuth, app);
 
     const httpServer = createServer(app);
     return httpServer;
