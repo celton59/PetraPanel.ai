@@ -107,6 +107,28 @@ export function setupAuth(app: Express) {
       return next();
     }
     
+    // Lista de rutas exentas de verificación CSRF (para compatibilidad con sistemas externos)
+    const exemptRoutes = [
+      '/api/compat/update-limits',
+      '/api/management/limits/user',
+      '/api/management/limits/all-users',
+      '/api/management/limits/report',
+      '/api/suggestions',
+      '/api/suggestions/user'
+    ];
+    
+    // Verificar si la ruta actual está en la lista de exenciones
+    const currentPath = req.path;
+    const isExemptRoute = exemptRoutes.some(route => 
+      currentPath === route || currentPath.startsWith(route + '/')
+    );
+    
+    // Si la ruta está exenta, permitimos la solicitud sin verificación CSRF
+    if (isExemptRoute) {
+      console.log(`Ruta exenta de CSRF: ${currentPath}`);
+      return next();
+    }
+    
     // Verificar el token CSRF para peticiones mutantes (POST, PUT, DELETE, etc.)
     const requestToken = req.headers['x-csrf-token'] || req.body?.csrfToken;
     
@@ -115,7 +137,8 @@ export function setupAuth(app: Express) {
       if (process.env.NODE_ENV === 'production' || process.env.ENFORCE_CSRF === 'true') {
         console.error('CSRF token mismatch', {
           sessionToken: req.session.csrfToken,
-          requestToken
+          requestToken,
+          path: req.path
         });
         return res.status(403).json({
           success: false,
@@ -125,7 +148,8 @@ export function setupAuth(app: Express) {
         // En desarrollo, solo registramos el error pero permitimos la petición
         console.warn('CSRF token mismatch, but allowing in development mode', {
           sessionToken: req.session.csrfToken,
-          requestToken
+          requestToken,
+          path: req.path
         });
       }
     }

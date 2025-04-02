@@ -21,7 +21,7 @@ async function addMaxAssignedVideosColumn() {
       
       // Si la columna no existe, la añadimos
       await db.execute(`
-        ALTER TABLE users ADD COLUMN max_assigned_videos INTEGER DEFAULT 3;
+        ALTER TABLE users ADD COLUMN max_assigned_videos INTEGER DEFAULT 50;
       `);
       
       log('Columna max_assigned_videos añadida con éxito', 'add-column');

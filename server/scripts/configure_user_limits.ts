@@ -33,7 +33,7 @@ async function configureUserLimits() {
     console.log("ID | Usuario | Nombre | Límite");
     console.log("------------------------------");
     youtubers.forEach(user => {
-      console.log(`${user.id} | ${user.username} | ${user.fullName} | ${user.maxAssignedVideos || 10}`);
+      console.log(`${user.id} | ${user.username} | ${user.fullName} | ${user.maxAssignedVideos || 50}`);
     });
     
     const rl = readline.createInterface({
@@ -82,7 +82,7 @@ async function configureSpecificUser(rl: readline.Interface, youtubers: any[]) {
       return;
     }
     
-    rl.question(`Ingresa el nuevo límite para ${user.username} (actualmente: ${user.maxAssignedVideos || 10}): `, async (limit) => {
+    rl.question(`Ingresa el nuevo límite para ${user.username} (actualmente: ${user.maxAssignedVideos || 50}): `, async (limit) => {
       const newLimit = parseInt(limit);
       
       if (isNaN(newLimit) || newLimit < 1) {

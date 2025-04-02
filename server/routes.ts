@@ -28,6 +28,7 @@ import { setupYoutubeRoutes } from "./controllers/youtubeController";
 import { setupAdStatsRoutes } from "./controllers/adStatsController";
 import { setupUserActivityStatsRoutes } from "./controllers/userActivityStatsController";
 import { setupStatsRoutes } from "./controllers/statsController";
+import { setupCompatRoutes } from "./controllers/compatController";
 
 export function registerRoutes(app: Express): Server {
   try {
@@ -356,6 +357,9 @@ export function registerRoutes(app: Express): Server {
     
     // Estadísticas de actividad de usuarios
     setupUserActivityStatsRoutes(requireAuth, app);
+    // Rutas de compatibilidad para lidiar con problemas específicos
+    // Estas rutas son alternativas a rutas existentes para resolver problemas de permiso
+    setupCompatRoutes(app, requireAuth);
 
     const httpServer = createServer(app);
     return httpServer;

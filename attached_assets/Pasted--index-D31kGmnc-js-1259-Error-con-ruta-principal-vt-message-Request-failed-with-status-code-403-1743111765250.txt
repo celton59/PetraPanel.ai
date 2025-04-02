@@ -1,0 +1,56 @@
+
+index-D31kGmnc.js:1259 Error con ruta principal: 
+vt {message: 'Request failed with status code 403', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+index-D31kGmnc.js:1259 Intentando con ruta específica...
+index-D31kGmnc.js:976 
+ PUT https://petrapanel.ai/api/users/20/limits 403 (Forbidden)
+index-D31kGmnc.js:1259 Error con ruta específica: 
+vt {message: 'Request failed with status code 403', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+index-D31kGmnc.js:1259 Intentando con ruta de compatibilidad...
+index-D31kGmnc.js:976 
+ POST https://petrapanel.ai/api/compat/update-limits 403 (Forbidden)
+index-D31kGmnc.js:1259 Error con ruta de compatibilidad: 
+vt {message: 'Request failed with status code 403', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+code
+: 
+"ERR_BAD_REQUEST"
+config
+: 
+{transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}
+message
+: 
+"Request failed with status code 403"
+name
+: 
+"AxiosError"
+request
+: 
+XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
+response
+: 
+{data: {…}, status: 403, statusText: '', headers: Ia, config: {…}, …}
+status
+: 
+403
+stack
+: 
+"AxiosError: Request failed with status code 403\n    at hV (https://petrapanel.ai/assets/index-D31kGmnc.js:976:1040)\n    at XMLHttpRequest.b (https://petrapanel.ai/assets/index-D31kGmnc.js:976:5688)\n    at xu.request (https://petrapanel.ai/assets/index-D31kGmnc.js:978:2066)\n    at async g (https://petrapanel.ai/assets/index-D31kGmnc.js:1259:82232)\n    at async https://petrapanel.ai/assets/index-D31kGmnc.js:1031:49833"
+[[Prototype]]
+: 
+Error
+constructor
+: 
+ƒ vt(e,t,r,n,s)
+toJSON
+: 
+ƒ ()
+isAxiosError
+: 
+true
+[[Prototype]]
+: 
+Object
+index-D31kGmnc.js:1259 Todas las actualizaciones API fallaron, usando solo UI: 
+vt {message: 'Request failed with status code 403', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+﻿
+

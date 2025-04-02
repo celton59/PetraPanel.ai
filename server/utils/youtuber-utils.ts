@@ -106,7 +106,7 @@ export async function canYoutuberTakeMoreVideos(userId: number): Promise<{
     
     // Obtener el número actual de videos asignados
     const currentCount = await countAssignedVideos(userId);
-    const maxAllowed = user.maxVideos || 10; // Usar valor predeterminado 10 si no está definido
+    const maxAllowed = user.maxVideos || 50; // Usar valor predeterminado 50 si no está definido
     
     return {
       canTakeMore: currentCount < maxAllowed,
@@ -368,7 +368,7 @@ export async function getYoutuberVideoLimits(userId: number): Promise<{
     const allMonthlyLimits = await getAllMonthlyLimits(userId);
     
     // Determinar qué límite mensual usar
-    const maxAssignedAllowed = user.maxAssignedVideos || 10; 
+    const maxAssignedAllowed = user.maxAssignedVideos || 50; 
     const monthlyLimit = specificLimit !== null ? specificLimit : (user.maxMonthlyVideos || 50);
     
     return {

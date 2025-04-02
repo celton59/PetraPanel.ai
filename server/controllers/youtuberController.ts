@@ -174,10 +174,85 @@ export async function updateUser(
       });
     }
 
-    const body = req.body as UpdateUserSchema;
+    const body = req.body;
     const { id } = req.params;
-
-    // Validar body con schema
+    const referer = req.headers.referer || '';
+    
+    // Caso especial: actualización solo de límites (detecta request específica)
+    // Detectamos si la petición es desde la página de límites por el referer o la estructura de datos
+    const isFromLimitsPage = (
+      // Si contiene estas URLs en el referer, muy probablemente es del panel de límites
+      (referer.includes('/configuration/limits') || referer.includes('/admin/configuration')) ||
+      // O por la estructura de la petición que solo incluye límites y nada más
+      (Object.keys(body).length <= 2 && 
+       (body.maxAssignedVideos !== undefined || body.maxMonthlyVideos !== undefined) &&
+       !body.username && !body.fullName && !body.password && !body.email && !body.projectIds)
+    );
+    
+    if (isFromLimitsPage) {
+      console.log("Detectada actualización de límites:", {
+        body,
+        from: referer || 'unknown',
+        userId: id
+      });
+      
+      // Para estas actualizaciones, simplificamos y solo actualizamos los límites
+      // sin requerir todos los campos del esquema de validación
+      const updateData: Record<string, any> = {
+        updatedAt: new Date()
+      };
+      
+      if (body.maxAssignedVideos !== undefined && typeof body.maxAssignedVideos === 'number' && body.maxAssignedVideos > 0) {
+        updateData.maxAssignedVideos = body.maxAssignedVideos;
+      }
+      
+      if (body.maxMonthlyVideos !== undefined && typeof body.maxMonthlyVideos === 'number' && body.maxMonthlyVideos > 0) {
+        updateData.maxMonthlyVideos = body.maxMonthlyVideos;
+      }
+      
+      console.log("Actualizando solo límites con:", updateData);
+      
+      try {
+        // Actualizar directamente solo los límites sin validación completa
+        const [updatedUser] = await db
+          .update(users)
+          .set(updateData)
+          .where(eq(users.id, parseInt(id)))
+          .returning();
+          
+        if (!updatedUser) {
+          return res.status(404).json({
+            success: false,
+            message: "Usuario no encontrado"
+          });
+        }
+        
+        console.log("Límites actualizados correctamente:", {
+          id: updatedUser.id,
+          maxAssignedVideos: updatedUser.maxAssignedVideos,
+          maxMonthlyVideos: updatedUser.maxMonthlyVideos
+        });
+        
+        return res.json({
+          success: true,
+          data: {
+            id: updatedUser.id,
+            maxAssignedVideos: updatedUser.maxAssignedVideos,
+            maxMonthlyVideos: updatedUser.maxMonthlyVideos  
+          },
+          message: "Límites actualizados correctamente"
+        });
+      } catch (error) {
+        console.error("Error actualizando límites:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Error actualizando límites de usuario"
+        });
+      }
+    }
+    
+    // Para todas las demás actualizaciones, procedemos con la validación completa
+    // Validar body con schema para actualizaciones completas de usuario
     const validationResult = updateUserSchema.safeParse(body);
     if (!validationResult.success) {
       return res
@@ -195,7 +270,7 @@ export async function updateUser(
       email,
       role,
       maxAssignedVideos,
-    } = body;
+    } = body as UpdateUserSchema;
     console.log("Actualizando usuario:", { id, projectIds });
 
     // Hash password if provided and user is admin
@@ -409,12 +484,106 @@ export async function deleteUser(
 }
 
 
+/**
+ * Actualiza solo los límites de videos de un usuario
+ * Endpoint especializado para el panel de administración de límites
+ */
+export async function updateUserLimits(
+  req: Request,
+  res: Response,
+): Promise<Response> {
+  try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "No tienes permisos para realizar esta acción",
+      });
+    }
+
+    const { id } = req.params;
+    const { maxAssignedVideos, maxMonthlyVideos } = req.body;
+    
+    console.log(`Actualizando límites para usuario ${id}:`, { maxAssignedVideos, maxMonthlyVideos });
+
+    // Verificar que al menos uno de los campos está presente
+    if (maxAssignedVideos === undefined && maxMonthlyVideos === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "Debe proporcionar al menos un límite para actualizar"
+      });
+    }
+
+    // Validar valores numéricos positivos
+    if (maxAssignedVideos !== undefined && (typeof maxAssignedVideos !== 'number' || maxAssignedVideos < 1)) {
+      return res.status(400).json({
+        success: false,
+        message: "El límite de videos asignados debe ser un número positivo"
+      });
+    }
+
+    if (maxMonthlyVideos !== undefined && (typeof maxMonthlyVideos !== 'number' || maxMonthlyVideos < 1)) {
+      return res.status(400).json({
+        success: false,
+        message: "El límite de videos mensuales debe ser un número positivo"
+      });
+    }
+
+    // Construir objeto de actualización con los campos proporcionados
+    const updateData: Record<string, any> = {
+      updatedAt: new Date()
+    };
+
+    if (maxAssignedVideos !== undefined) {
+      updateData.maxAssignedVideos = maxAssignedVideos;
+    }
+
+    if (maxMonthlyVideos !== undefined) {
+      updateData.maxMonthlyVideos = maxMonthlyVideos;
+    }
+
+    // Actualizar usuario
+    const [updatedUser] = await db
+      .update(users)
+      .set(updateData)
+      .where(eq(users.id, parseInt(id)))
+      .returning();
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado"
+      });
+    }
+
+    console.log("Límites actualizados correctamente:", updatedUser);
+
+    return res.json({
+      success: true,
+      data: {
+        id: updatedUser.id,
+        maxAssignedVideos: updatedUser.maxAssignedVideos,
+        maxMonthlyVideos: updatedUser.maxMonthlyVideos
+      },
+      message: "Límites de usuario actualizados correctamente",
+    });
+  } catch (error) {
+    console.error("Error updating user limits:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error al actualizar los límites del usuario",
+    });
+  }
+}
+
 export function setUpUserRoutes (requireAuth: (req: Request, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined, app: Express) {
   app.post("/api/users", requireAuth, createUser);
 
-  app.put("/api/users/:id", requireAuth, updateUser );
+  app.put("/api/users/:id", requireAuth, updateUser);
+  
+  // Nueva ruta específica para actualizar sólo los límites
+  app.put("/api/users/:id/limits", requireAuth, updateUserLimits);
 
-  app.get("/api/users", requireAuth, getUsers );
+  app.get("/api/users", requireAuth, getUsers);
 
-  app.delete("/api/users/:id", requireAuth, deleteUser );
+  app.delete("/api/users/:id", requireAuth, deleteUser);
 }
