@@ -138,7 +138,7 @@ export function MobileNavBar() {
       )}
       
       {/* Barra de navegación fija en la parte inferior para móviles */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t z-50 py-1 px-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t shadow-lg z-50 py-1 px-2">
         <div className="flex items-center justify-around">
           {navItems.map((item) => {
             const isActive = !item.path.startsWith('#') && isActiveRoute(item.path);
@@ -150,7 +150,7 @@ export function MobileNavBar() {
                   variant="ghost"
                   size="sm"
                   onClick={item.onClick}
-                  className="flex flex-col items-center justify-center px-1 py-2 rounded-lg w-16 relative"
+                  className="flex flex-col items-center justify-center px-1 py-2 rounded-lg w-16 relative transition-colors"
                 >
                   <item.icon className={cn(
                     "h-5 w-5 mb-1",
@@ -164,7 +164,7 @@ export function MobileNavBar() {
                       {item.badge > 99 ? '99+' : item.badge}
                     </span>
                   )}
-                  <span className="text-xs font-medium text-muted-foreground">
+                  <span className="text-xs font-medium text-muted-foreground transition-colors">
                     {item.label}
                   </span>
                 </Button>
@@ -172,24 +172,26 @@ export function MobileNavBar() {
             }
 
             return (
-              <Link
-                key={item.label}
-                href={item.path}
-                className={cn(
-                  "flex flex-col items-center justify-center px-1 py-2 rounded-lg w-16",
-                  isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground"
-                )}
-              >
+                <Link
+                  key={item.label}
+                  href={item.path}
+                  className={cn(
+                    "flex flex-col items-center justify-center px-1 py-2 rounded-lg w-16 transition-colors",
+                    isActive
+                      ? "bg-primary/20 text-primary shadow"
+                      : "text-muted-foreground"
+                  )}
+                >
                 <item.icon className={cn(
                   "h-5 w-5 mb-1",
                   isActive ? "text-primary" : "text-muted-foreground"
                 )} />
-                <span className={cn(
-                  "text-xs font-medium",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )}>
+                <span
+                  className={cn(
+                    "text-xs font-medium transition-colors",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
                   {item.label}
                 </span>
               </Link>
@@ -200,9 +202,9 @@ export function MobileNavBar() {
 
       {/* Menú lateral completo */}
       <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <SheetContent 
-          side="left" 
-          className="w-[280px] p-0"
+        <SheetContent
+          side="left"
+          className="w-[280px] p-0 bg-background/90 backdrop-blur-md"
           aria-label="Menú de navegación"
         >
           <div className="flex flex-col h-full">
@@ -311,9 +313,9 @@ export function MobileNavBar() {
 
       {/* Panel de notificaciones optimizado para móvil */}
       <Sheet open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
-        <SheetContent 
-          side="right" 
-          className="w-[320px] sm:w-[380px] p-0"
+        <SheetContent
+          side="right"
+          className="w-[320px] sm:w-[380px] p-0 bg-background/90 backdrop-blur-md"
           aria-label="Centro de notificaciones"
         >
           <div className="flex flex-col h-full overflow-hidden">
